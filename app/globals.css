@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: red;
+  font-style: italic;
+}
+
+nav {
+  padding: 1rem
+}
+
+.btn {
+  padding: 0.8rem;
+  border-radius: 0.5rem;
+  background: rgb(236, 99, 213);
+  border: none;
+  cursor: pointer;
+  transition: all 0.1s;   
+}
+
+.btn:hover {
+
+  background: rgb(240, 142, 223);
+}
+
+
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
