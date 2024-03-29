@@ -7,17 +7,16 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import bcrypt from 'bcryptjs';
 import { NextResponse } from 'next/server';
-import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
-import { getSession } from '@/lib';
+import { getSession, encrypt } from '@/lib';
 //mongoose models
 import Member from '@/models/memberModel';
 import Post from '@/models/postModel';
+import Waiver from '@/models/waiverModel';
 //zod schemas
 import { MemberSchema } from '@/app/schemas/memberSchema';
 import { PostFormSchema } from '@/app/schemas/postFormSchema';
 
-import { encrypt } from '@/lib';
 
 
 export const createNewPost = async (prevState, formData) => {
@@ -176,20 +175,37 @@ export async function confirmWaiver(formData) {
         return { message: "You must be logged in to confirm the waiver" };
     }
 
-    const { email } = member.resultObj;
+    const { email, firstName, lastName, _id } = member.resultObj;
 
     try {
         await connectToDb();
-        const updatedMember = await Member.findOneAndUpdate({ email: email }, { waiver: true }, { new: true });
-        const updatedMemberObj = updatedMember.toObject();
+        
+        const waiver = new Waiver({
+            memberId: _id,
+            email,
+            firstName,
+            lastName,
+            createdAt: new Date()
+        });
 
-    // Convert _id to string
-    updatedMemberObj._id = updatedMemberObj._id.toString();
+        await waiver.save();
 
-    return updatedMemberObj;
-        } catch (error) {
-            console.error(error);
-        }
-    revalidatePath('/dashboard/member')
-    redirect('/')
+        revalidatePath('/dashboard/member')
+
+        return { message: "Waiver confirmed" };
+    } catch (error) {
+        console.error(error);
+    }
+
+    redirect('/dashboard/member')
+}
+
+export async function getWaivers() {
+    try {
+        await connectToDb();
+        const waivers = await Waiver.find();
+        return waivers;
+    } catch (error) {
+        console.error(error);
+    }
 }
