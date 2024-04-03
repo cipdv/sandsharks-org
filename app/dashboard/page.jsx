@@ -35,3 +35,9 @@
 // }
 
 // export default dashboard
+
+const dashboardPage = () => {
+  return <div>dashboardPage</div>;
+};
+
+export default dashboardPage;
