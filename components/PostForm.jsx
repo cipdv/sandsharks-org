@@ -12,7 +12,7 @@ function SubmitButton() {
     const { pending } = useFormStatus();
   
     return (
-      <button type="submit" aria-disabled={pending}>
+      <button type="submit" aria-disabled={pending} className='btn'>
         {pending ? 'Submitting...' : 'Submit'}
       </button>
     );

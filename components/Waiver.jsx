@@ -25,9 +25,9 @@ const Waiver = () => {
     return (
         <form action={formAction} className="bg-blue-100 p-4 rounded-md">  
             {state?.message && <h1>{state?.message}</h1>}
-            <h1 className="mt-4">To continue, please read and agree to the liability waiver and code of conduct:</h1>
+            <h1 className="mb-8 text-3xl font-bold">To continue, please read and agree to the liability waiver and code of conduct:</h1>
             <div>
-                <h2 className="mt-4">Code of Conduct</h2>
+                <h2 className="mt-4 font-bold">Code of Conduct</h2>
                 <p className="mt-4">
                     Sandsharks is organized to be fun, safe, and welcoming to all LGBTQ+ people. We will not tolerate discrimination, 
                     hate speech, verbal or physical harrassment of any kind. Our goal is to have fun in a friendly competitive setting. 
@@ -36,23 +36,23 @@ const Waiver = () => {
                 <p>
                     To be a Sandshark, read this oath and keep it in mind while playing with us:
                 </p>
-                <ul>
-                    <li>I will treat all members of the group with respect and kindness</li>
-                    <li>I will be welcoming to new players of all skill levels and help them in any way that I can to be part of the group</li>
-                    <li>I will be careful with my language and comments to avoid making others feel uncomfortable or unwelcome</li>
-                    <li>I will play to have fun and do my best to keep my cool during games</li>
+                <ul className="mt-4 font-bold ml-4 space-y-2">
+                    <li>I will treat all members of the group with respect and kindness.</li>
+                    <li>I will be welcoming to new players of all skill levels and help them in any way that I can to be part of the group.</li>
+                    <li>I will be careful with my language and comments to avoid making others feel uncomfortable or unwelcome.</li>
+                    <li>I will play to have fun and do my best to keep my cool during games.</li>
                 </ul>
                 <br />
                 <p>
-                    If you feel that someone is making you uncomfortable with their words or actions, you don't need to put up with it, 
-                    please let Cip know either in person, email, or a private message. 
+                    If you feel that someone is making you uncomfortable with their words or actions, you don't need to put up with it; 
+                    please let Cip know either in person or by <a href='mailto:info@sandsharks.org' className='text-blue-700 hover:text-blue-500'>email</a>. 
                 </p>
             </div>
             <div>
-                <h2 className="mt-4">Liability Waiver</h2>
+                <h2 className="mt-4 font-bold">Liability Waiver</h2>
                 <p className="mt-4">
-                    By clicking agree, I hereby release and forever discharge Toronto SandSharks, its players, organizers, and
-                    agents, from all liabilities, actions, cause of actions, claims, demands for damages, loss or personal injuries,
+                    By clicking agree, <b>I hereby release and forever discharge Toronto SandSharks, its players, organizers, and
+                    agents, from all liabilities, actions, cause of actions, claims, demands for damages, loss or personal injuries, </b>
                     however so arising and including, but not limited to injuries arising from the negligence of Toronto
                     SandSharks, its players, organizers, and agents which hereto may have been or may hereafter be
                     sustained by me in consequence of my participation.

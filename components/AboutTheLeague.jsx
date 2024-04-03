@@ -19,7 +19,9 @@ const AboutTheLeague = () => {
         </p>
         <h1 className='mt-4'>When do we play:</h1>
         <p className='mt-2'>
-            There is no set schedule, but we try to go out most weekends when the sun is shining (depending on the weather forecast and court availability). An update is posted here for members at the beginning of the week letting everyone know which days we’ll likely be able to play. 
+            There is no set schedule, but we try to go out most weekends when the sun is shining (depending on the weather forecast and court availability). An update is posted here for members at the beginning of the week letting everyone know which days we’ll likely be able to play.
+            <br />
+            Games are all drop-in, so come when you can, play as many games as you'd like, and leave when you need to. 
         </p>
         <h1 className='mt-4'>How do I sign up?</h1>
         <p className='mt-2'>

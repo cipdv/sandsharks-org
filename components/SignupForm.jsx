@@ -19,9 +19,9 @@ function SubmitButton() {
     const { pending } = useFormStatus();
   
     return (
-      <button type="submit" aria-disabled={pending}>
-        {pending ? 'Submitting...' : 'Sign up'}
-      </button>
+        <button type="submit" aria-disabled={pending} className='btn w-2/5 '>
+            {pending ? 'Submitting...' : 'Sign up'}
+        </button>
     );
 }
 
@@ -32,8 +32,9 @@ const SignupForm = () => {
     //how do I clear this form after submission?
 
     return (
-        <form action={formAction} className="bg-blue-100 p-4 rounded-md">  
-            <div className="flex flex-col gap-3 glassmorphism">
+        <form action={formAction} className="bg-blue-100 p-4 rounded-md mt-6 w-full lg:w-3/5 mx-auto">
+            <h1 className="text-2xl font-bold">Become a Sandsharks Member</h1>
+            <div className="flex flex-col gap-3 glassmorphism mt-4">
                 <label htmlFor="firstName">First Name</label>
                 <input
                     type="text" 

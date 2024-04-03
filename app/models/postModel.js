@@ -1,25 +1,21 @@
 
-// const postRepliesSchema = mongoose.Schema({
-//     name: {
-//         type: String,
-//         required: true
-//     },
-//     email: {
-//         type: String,
-//         required: true
-//     },
-//     userId: {
-//         type: String,
-//         required: true
-//     },
-//     reply: {
-//         type: String,
-//         required: true
-//     },
-//     image: {
-//         type: String
-//     }
-// })
+const postRepliesSchema = mongoose.Schema({
+    name: {
+        type: String,
+        required: true
+    },
+    email: {
+        type: String,
+        required: true
+    },
+    userId: {
+        type: String,
+        required: true
+    },
+    // image: {
+    //     type: String
+    // }
+})
 
 // const begClinicRepliesSchema = mongoose.Schema({
 //     name: {
@@ -97,11 +93,7 @@ const postSchema = new Schema({
             type: String
         },
         beginnerClinic: beginnerClinicSchema,
-        seekingReplies: {
-            type: Boolean,
-            default: true
-        },
-        // replies: [postRepliesSchema]
+        replies: [postRepliesSchema]
     }, {
         timestamps: true
 })
