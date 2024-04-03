@@ -82,22 +82,22 @@ export async function updateSession(request) {
   return res;
 }
 
-// export const getJwtSecretKey = () => {
-//   const secret = process.env.JWT_SECRET;
-//   if (!secret) {
-//     throw new Error("JWT_SECRET is not defined");
-//   }
-//   return secret;
-// };
+export const getJwtSecretKey = () => {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error("JWT_SECRET is not defined");
+  }
+  return secret;
+};
 
-// export const verifyAuth = async (token) => {
-//   try {
-//     const verified = await jwtVerify(
-//       token,
-//       new TextEncoder().encode(getJwtSecretKey())
-//     );
-//     return verified.payload;
-//   } catch (error) {
-//     throw new Error("Invalid token");
-//   }
-// };
+export const verifyAuth = async (token) => {
+  try {
+    const verified = await jwtVerify(
+      token,
+      new TextEncoder().encode(getJwtSecretKey())
+    );
+    return verified.payload;
+  } catch (error) {
+    throw new Error("Invalid token");
+  }
+};
