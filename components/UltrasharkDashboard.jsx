@@ -3,11 +3,11 @@ import PostForm from "@/components/PostForm";
 import { getSession } from "@/lib/auth";
 import { getAllPosts } from "@/app/actions";
 
-const UltrasharkDashboard = async () => {
-  const session = await getSession();
-  const userObj = JSON.stringify(session, null, 2);
-  const user = session?.resultObj;
-  const posts = await getAllPosts();
+const UltrasharkDashboard = async ({ user, posts }) => {
+  //   const session = await getSession();
+  //   const userObj = JSON.stringify(session, null, 2);
+  //   const user = session?.resultObj;
+  //   const posts = await getAllPosts();
 
   return (
     <div>

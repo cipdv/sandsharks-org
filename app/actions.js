@@ -1,14 +1,14 @@
 "use server";
 
 //database connection
-import { connectToDb } from "@/app/utils/database";
+import { connectToDb } from "@/lib/database";
 //dependencies
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { getSession, encrypt } from "@/app/utils/lib";
+import { getSession, encrypt } from "@/lib/auth";
 //mongoose models
 import Member from "@/app/models/memberModel";
 import Post from "@/app/models/postModel";

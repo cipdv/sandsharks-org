@@ -1,4 +1,4 @@
-import { login } from "@/app/utils/lib";
+import { login } from "@/lib/auth";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -9,7 +9,7 @@ const signInPage = () => {
         action={async (formData) => {
           "use server";
           await login(formData);
-          redirect("/");
+          redirect("/dashboard");
         }}
         className="bg-blue-100 p-4 rounded-md mt-6 w-full lg:w-3/5 mx-auto"
       >
