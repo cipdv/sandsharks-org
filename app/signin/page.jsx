@@ -33,7 +33,7 @@ const signInPage = () => {
         </button>
         <h2 className="mt-4">
           <Link href="/signup">
-            Haven't signed up yet? Click here to sign-up.
+            Haven't signed up yet? Click here to sign up.
           </Link>
         </h2>
       </form>
