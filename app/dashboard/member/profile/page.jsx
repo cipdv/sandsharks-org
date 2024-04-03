@@ -1,5 +1,5 @@
 import MemberProfile from "@/components/MemberProfile";
-import { getSession } from "@/lib/auth";
+import { getSession } from "@/app/lib/auth";
 
 const profile = async () => {
   const session = await getSession();

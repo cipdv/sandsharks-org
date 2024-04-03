@@ -1,6 +1,6 @@
 import Posts from "@/components/Posts";
 import PostForm from "@/components/PostForm";
-import { getSession } from "@/lib/auth";
+import { getSession } from "@/app/lib/auth";
 import { getAllPosts } from "@/app/actions";
 
 const UltrasharkDashboard = async ({ user, posts }) => {

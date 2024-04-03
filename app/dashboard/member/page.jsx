@@ -1,4 +1,4 @@
-import { getSession } from "@/lib/auth";
+import { getSession } from "@/app/lib/auth";
 import { getAllPosts, getWaivers } from "@/app/actions";
 //components
 import Waiver from "@/components/Waiver";

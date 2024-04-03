@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { updateSession } from "@/lib/auth";
+import { updateSession } from "@/app/lib/auth";
 
 export async function middleware(request) {
   console.log("middleware ran successfully");

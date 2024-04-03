@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getSession, logout } from "@/lib/auth";
+import { getSession, logout } from "@/app/lib/auth";
 import { redirect } from "next/navigation";
 
 const Navbar = async () => {

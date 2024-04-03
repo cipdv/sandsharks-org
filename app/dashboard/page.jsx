@@ -1,7 +1,7 @@
 import { getAllPosts } from "@/app/actions"
 import MemberDashboard from "@/components/MemberDashboard"
 import UltrasharkDashboard from "@/components/UltrasharkDashboard"
-import { getSession, logout } from "@/lib/auth"
+import { getSession, logout } from "@/app/lib/auth"
 import { redirect } from "next/navigation"
 
 const dashboard = async () => {

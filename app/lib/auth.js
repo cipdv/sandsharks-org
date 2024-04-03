@@ -1,7 +1,7 @@
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
-import { connectToDb } from "@/lib/database";
+import { connectToDb } from "@/app/lib/database";
 import Member from "@/app/models/memberModel";
 import bcrypt from "bcryptjs";
 
