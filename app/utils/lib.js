@@ -62,7 +62,8 @@ export async function logout() {
 export async function getSession() {
   const session = cookies().get("session")?.value;
   if (!session) return null;
-  return await decrypt(session);
+  const decryptedSession = await decrypt(session);
+  return decryptedSession.resultObj;
 }
 
 export async function updateSession(request) {
