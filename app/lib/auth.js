@@ -4,6 +4,8 @@ import { NextRequest, NextResponse } from "next/server";
 // import { connectToDb } from "@/app/lib/database";
 import Member from "@/app/models/memberModel";
 import bcrypt from "bcryptjs";
+import { dbConnection } from '@/app/lib/db'
+
 
 const secretKey = process.env.SECRET_KEY;
 const key = new TextEncoder().encode(secretKey);
@@ -22,7 +24,6 @@ export async function decrypt(input) {
   });
   return payload;
 }
-import { dbConnection } from '@/app/lib/db'
 
 export async function login(formData) {
   // Verify credentials && get the user
