@@ -1,27 +1,29 @@
-import mongoose from "mongoose";
 
-let isConnected = false //track connection status
 
-export const connectToDb = async () => {
+// import mongoose from "mongoose";
 
-    mongoose.set('strictQuery', true)
+// let isConnected = false //track connection status
 
-    if(isConnected) {
-        console.log('mongodb is already connected')
-        return
-    }
+// export const connectToDb = async () => {
 
-    try {
-        await mongoose.connect(process.env.MONGODB_URI, {
-            dbName: 'Sandsharks',
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-        })
+//     mongoose.set('strictQuery', true)
 
-        isConnected = true
+//     if(isConnected) {
+//         console.log('mongodb is already connected')
+//         return
+//     }
 
-        console.log('mongodb is connected')
-    } catch (error) {
-        console.log(error)
-    }
-}
+//     try {
+//         await mongoose.connect(process.env.MONGODB_URI, {
+//             dbName: 'Sandsharks',
+//             useNewUrlParser: true,
+//             useUnifiedTopology: true
+//         })
+
+//         isConnected = true
+
+//         console.log('mongodb is connected')
+//     } catch (error) {
+//         console.log(error)
+//     }
+// }

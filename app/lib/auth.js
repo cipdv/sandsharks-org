@@ -1,7 +1,7 @@
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
-import { connectToDb } from "@/app/lib/database";
+// import { connectToDb } from "@/app/lib/database";
 import Member from "@/app/models/memberModel";
 import bcrypt from "bcryptjs";
 
@@ -22,6 +22,7 @@ export async function decrypt(input) {
   });
   return payload;
 }
+import { dbConnection } from '@/app/lib/db'
 
 export async function login(formData) {
   // Verify credentials && get the user
@@ -31,8 +32,10 @@ export async function login(formData) {
     password: formData.get("password"),
   };
   console.log("user", user);
-  await connectToDb();
-  const result = await Member.findOne({ email: user.email });
+
+  const db = await dbConnection();
+  const result = await db.collection('members').findOne({ email: user.email });
+
   console.log("result", result);
   if (!result) {
     return new NextResponse(400, { error: "invalid credentials" });
@@ -43,7 +46,7 @@ export async function login(formData) {
   }
 
   //remove password from the object
-  let resultObj = result.toObject();
+  let resultObj = { ...result };
   delete resultObj.password;
 
   // Create the session
@@ -53,6 +56,36 @@ export async function login(formData) {
   // Save the session in a cookie
   cookies().set("session", session, { expires, httpOnly: true });
 }
+// export async function login(formData) {
+//   // Verify credentials && get the user
+
+//   const user = {
+//     email: formData.get("email"),
+//     password: formData.get("password"),
+//   };
+//   console.log("user", user);
+//   await connectToDb();
+//   const result = await Member.findOne({ email: user.email });
+//   console.log("result", result);
+//   if (!result) {
+//     return new NextResponse(400, { error: "invalid credentials" });
+//   }
+//   const passwordsMatch = await bcrypt.compare(user.password, result.password);
+//   if (!passwordsMatch) {
+//     return new NextResponse(400, { error: "invalid credentials" });
+//   }
+
+//   //remove password from the object
+//   let resultObj = result.toObject();
+//   delete resultObj.password;
+
+//   // Create the session
+//   const expires = new Date(Date.now() + 10 * 60 * 1000);
+//   const session = await encrypt({ resultObj, expires });
+
+//   // Save the session in a cookie
+//   cookies().set("session", session, { expires, httpOnly: true });
+// }
 
 export async function logout() {
   // Destroy the session
