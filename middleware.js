@@ -17,6 +17,16 @@ export async function middleware(request) {
          return NextResponse.redirect(new URL("/signin", request.url));
     }
 
+    const dashboardPaths = {
+        "ultrashark": "/dashboard/ultrashark",
+        "member": "/dashboard/member",
+        "pending": "/dashboard/member"
+    };
+
+    if (currentUser && !request.nextUrl.pathname.startsWith(dashboardPaths[memberType])) {
+        return NextResponse.redirect(new URL(dashboardPaths[memberType], request.url));
+    }
+
     // if (
     //   currentUser &&
     //   memberType === "ultrashark" &&

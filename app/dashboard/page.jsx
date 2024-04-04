@@ -13,8 +13,9 @@ const dashboard = async () => {
 
     return (
       <>
-          {(user?.memberType === 'pending' || user?.memberType === 'member') && <MemberDashboard user={user} posts={posts} />}
-          {user?.memberType === 'ultrashark' && <UltrasharkDashboard user={user} posts={posts} />}
+        dashboard placeholder
+          {/* {(user?.memberType === 'pending' || user?.memberType === 'member') && <MemberDashboard user={user} posts={posts} />}
+          {user?.memberType === 'ultrashark' && <UltrasharkDashboard user={user} posts={posts} />} */}
       </>
             
     )
