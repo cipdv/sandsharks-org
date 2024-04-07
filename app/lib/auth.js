@@ -4,8 +4,9 @@ import { NextRequest, NextResponse } from "next/server";
 // import { connectToDb } from "@/app/lib/database";
 import Member from "@/app/models/memberModel";
 import bcrypt from "bcryptjs";
-import { dbConnection } from '@/app/lib/db'
-
+import { dbConnection } from "@/app/lib/db";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 const secretKey = process.env.SECRET_KEY;
 const key = new TextEncoder().encode(secretKey);
@@ -32,12 +33,10 @@ export async function login(formData) {
     email: formData.get("email"),
     password: formData.get("password"),
   };
-  console.log("user", user);
 
   const db = await dbConnection();
-  const result = await db.collection('members').findOne({ email: user.email });
+  const result = await db.collection("members").findOne({ email: user.email });
 
-  console.log("result", result);
   if (!result) {
     return new NextResponse(400, { error: "invalid credentials" });
   }
@@ -56,7 +55,11 @@ export async function login(formData) {
 
   // Save the session in a cookie
   cookies().set("session", session, { expires, httpOnly: true });
+
+  revalidatePath("/");
+  redirect("/dashboard");
 }
+
 // export async function login(formData) {
 //   // Verify credentials && get the user
 

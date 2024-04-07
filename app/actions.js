@@ -3,24 +3,50 @@
 //database connection
 // import { connectToDb } from "@/app/lib/database";
 //dependencies
-import { ObjectId } from 'mongodb';
+import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { getSession, encrypt } from "@/app/lib/auth";
+
 //mongoose models
 import Member from "@/app/models/memberModel";
 import Post from "@/app/models/postModel";
 import Waiver from "@/app/models/waiverModel";
 //zod schemas
-import { MemberSchema } from "@/app/schemas/memberSchema";
+import {
+  MemberSchema,
+  MemberUpdateFormSchema,
+} from "@/app/schemas/memberSchema";
 import { PostFormSchema } from "@/app/schemas/postFormSchema";
 import { dbConnection } from "@/app/lib/db";
 
+export const getCurrentUser = async () => {
+  const session = await getSession();
+  if (session) {
+    const _id = new ObjectId(session.resultObj._id);
+    const db = await dbConnection();
+    const currentUser = await db.collection("members").findOne({ _id });
+    delete currentUser.password;
+    return currentUser;
+  }
+  return null;
+};
+
 export const createNewPost = async (prevState, formData) => {
   //only ultrashark and supersharks can create new posts
+
+  const session = await getSession();
+  if (
+    session?.resultObj?.memberType !== "ultrashark" &&
+    session?.resultObj?.memberType !== "supershark"
+  ) {
+    return { message: "You must be logged in a supershark to create a post" };
+  }
+  const user =
+    session?.resultObj?.preferredName || session?.resultObj?.firstName;
 
   const result = PostFormSchema.safeParse({
     title: formData.get("title"),
@@ -68,9 +94,10 @@ export const createNewPost = async (prevState, formData) => {
       },
       replies: [],
       createdAt: new Date(),
+      postedBy: user,
     };
 
-    await db.collection('posts').insertOne(post);
+    await db.collection("posts").insertOne(post);
 
     revalidatePath("/dashboard");
     return { message: `Added post: ${title}` };
@@ -82,10 +109,19 @@ export const createNewPost = async (prevState, formData) => {
 
 export const getAllPosts = async () => {
   //must be logged in to get all posts
+  const session = await getSession();
+  if (!session) {
+    return { message: "You must be logged in to see posts" };
+  }
 
   try {
     const db = await dbConnection();
-    const posts = await db.collection('posts').find().sort({ createdAt: -1 }).limit(10).toArray();
+    const posts = await db
+      .collection("posts")
+      .find()
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .toArray();
     return posts;
   } catch (error) {
     console.error(error);
@@ -96,6 +132,7 @@ export async function registerNewMember(prevState, formData) {
   // Convert the form data to an object
   const formDataObj = Object.fromEntries(formData.entries());
   formDataObj.emailNotifications = formDataObj.emailNotifications === "on";
+  formDataObj.profilePublic = formDataObj.profilePublic === "on";
 
   // Validate the form data
   const result = MemberSchema.safeParse(formDataObj);
@@ -116,6 +153,7 @@ export async function registerNewMember(prevState, formData) {
     emailNotifications,
     password,
     confirmPassword,
+    profilePublic,
   } = result.data;
 
   //check if passwords match
@@ -127,7 +165,9 @@ export async function registerNewMember(prevState, formData) {
     const db = await dbConnection();
 
     //check if user already exists
-    const memberExists = await db.collection('members').findOne({ email: email });
+    const memberExists = await db
+      .collection("members")
+      .findOne({ email: email });
 
     if (memberExists) {
       return { email: "This email is already registered" };
@@ -149,9 +189,10 @@ export async function registerNewMember(prevState, formData) {
       password: hashedPassword,
       waiver: false,
       createdAt: new Date(),
+      profilePublic,
     };
 
-    await db.collection('members').insertOne(newMember);
+    await db.collection("members").insertOne(newMember);
 
     //remove password from the object
     let resultObj = { ...newMember };
@@ -193,7 +234,7 @@ export async function confirmWaiver(formData) {
       createdAt: new Date(),
     };
 
-    await db.collection('waivers').insertOne(waiver);
+    await db.collection("waivers").insertOne(waiver);
 
     revalidatePath("/dashboard/member");
 
@@ -206,9 +247,14 @@ export async function confirmWaiver(formData) {
 }
 
 export async function getWaivers() {
+  const session = await getSession();
+  if (!session) {
+    return { message: "You must be logged in" };
+  }
+
   try {
     const db = await dbConnection();
-    const waivers = await db.collection('waivers').find().toArray();
+    const waivers = await db.collection("waivers").find().toArray();
     return waivers;
   } catch (error) {
     console.error(error);
@@ -216,65 +262,74 @@ export async function getWaivers() {
 }
 
 export async function replyToPost(postId) {
-    const member = await getSession();
-    if (!member) {
-        return { message: "You must be logged in to RSVP" };
+  const session = await getSession();
+  if (!session) {
+    return { message: "You must be logged in to RSVP" };
+  }
+
+  const member = await getCurrentUser();
+  const { email, firstName, lastName, preferredName, _id } = member;
+
+  try {
+    const db = await dbConnection();
+
+    //check if user has already replied
+    const post = await db
+      .collection("posts")
+      .findOne({ _id: new ObjectId(postId) });
+    if (!post) {
+      return { message: "Post not found" };
+    }
+    const hasReplied = post.replies.some(
+      (reply) => reply.userId === _id.toString()
+    );
+
+    if (hasReplied) {
+      await db
+        .collection("posts")
+        .updateOne(
+          { _id: new ObjectId(postId) },
+          { $pull: { replies: { userId: _id.toString() } } }
+        );
+    } else {
+      await db.collection("posts").updateOne(
+        { _id: new ObjectId(postId) },
+        {
+          $push: {
+            replies: {
+              name: preferredName || firstName,
+              email,
+              userId: _id.toString(),
+              createdAt: new Date(),
+            },
+          },
+        }
+      );
     }
 
-    const { email, firstName, lastName, preferredName, _id } = member.resultObj;
-
-    try {
-        const db = await dbConnection();
-
-        //check if user has already replied
-        const post = await db.collection('posts').findOne({ _id: new ObjectId(postId) });
-        if (!post) {
-            return { message: "Post not found" };
-        }
-        const hasReplied = post.replies.some((reply) => reply.userId === _id);
-
-        if (hasReplied) {
-            await db.collection('posts').updateOne(
-                { _id: new ObjectId(postId) },
-                { $pull: { replies: { userId: _id } } }
-            );
-        } else {
-            await db.collection('posts').updateOne(
-                { _id: new ObjectId(postId) },
-                {
-                    $push: {
-                        replies: {
-                            name: preferredName || firstName,
-                            email,
-                            userId: _id,
-                            createdAt: new Date(),
-                        },
-                    },
-                }
-            );
-        }
-
-        revalidatePath("/dashboard");
-        return { message: "RSVP confirmed" };
-    } catch (error) {
-        console.error(error);
-    }
+    revalidatePath("/dashboard");
+    return { message: "RSVP confirmed" };
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 export async function updateMemberProfile(formData) {
-  const member = await getSession();
-  if (!member) {
+  const session = await getSession();
+  if (!session) {
     return { message: "You must be logged in to update your profile" };
   }
 
-  const { _id } = member.resultObj;
+  const { _id } = session.resultObj;
 
   const formDataObj = Object.fromEntries(formData.entries());
   formDataObj.emailNotifications = formDataObj.emailNotifications === "on";
+  formDataObj.profilePublic = formDataObj.profilePublic === "on";
 
-  const result = MemberSchema.safeParse(formDataObj);
+  const result = MemberUpdateFormSchema.safeParse(formDataObj);
 
   if (!result.success) {
+    console.log("failed");
     return {
       message:
         "Failed to update profile: make sure all required fields are completed and try again",
@@ -288,32 +343,113 @@ export async function updateMemberProfile(formData) {
     pronouns,
     email,
     emailNotifications,
+    about,
+    profilePublic,
   } = result.data;
+
+  const db = await dbConnection();
+
+  const member = await db
+    .collection("members")
+    .findOne({ _id: new ObjectId(_id) });
+
+  if (!member) {
+    return { message: "Member not found" };
+  }
+
+  await db.collection("members").updateOne(
+    { _id: new ObjectId(_id) },
+    {
+      $set: {
+        firstName,
+        lastName,
+        preferredName,
+        pronouns,
+        email,
+        emailNotifications,
+        about,
+        profilePublic,
+      },
+    }
+  );
+
+  revalidatePath("/dashboard/member");
+  redirect("/");
+}
+
+export async function approveMemberProfile(memberId) {
+  const session = await getSession();
+  if (session?.resultObj?.memberType !== "ultrashark") {
+    return { message: "You must be logged in to approve a member" };
+  }
 
   try {
     const db = await dbConnection();
+    await db
+      .collection("members")
+      .updateOne(
+        { _id: new ObjectId(memberId) },
+        { $set: { memberType: "member" } }
+      );
 
-    const member = await db.collection('members').findOne({ _id: new ObjectId(_id) });
-    if (!member) {
-      return { message: "Member not found" };
-    }
+    revalidatePath("/dashboard/ultrashark/members");
+    return { message: "Member approved" };
+  } catch (error) {
+    console.error(error);
+  }
+}
 
-    await db.collection('members').updateOne(
-      { _id: new ObjectId(_id) },
-      {
-        $set: {
-          firstName,
-          lastName,
-          preferredName,
-          pronouns,
-          email,
-          emailNotifications,
-        },
-      }
-    );
+export async function deactivateMemberProfile(memberId) {
+  const session = await getSession();
+  if (session?.resultObj?.memberType !== "ultrashark") {
+    return { message: "You must be logged in to deactivate a member" };
+  }
 
-    revalidatePath("/dashboard/member");
-    return { message: "Profile updated" };
+  try {
+    const db = await dbConnection();
+    await db
+      .collection("members")
+      .updateOne(
+        { _id: new ObjectId(memberId) },
+        { $set: { memberType: "pending" } }
+      );
+
+    //send an email to the member that their profile has been deactived, give a reason why?
+
+    revalidatePath("/dashboard/ultrashark/members");
+    return { message: "Member deactivated" };
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function deleteMemberProfile(memberId) {
+  const session = await getSession();
+  if (session?.resultObj?.memberType !== "ultrashark") {
+    return { message: "You must be logged in to delete a member" };
+  }
+
+  try {
+    const db = await dbConnection();
+    await db.collection("members").deleteOne({ _id: new ObjectId(memberId) });
+
+    revalidatePath("/dashboard/ultrashark/members");
+    return { message: "Member deleted" };
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function getAllMembers() {
+  const session = await getSession();
+  if (!session) {
+    return { message: "You must be logged" };
+  }
+
+  try {
+    const db = await dbConnection();
+    const members = await db.collection("members").find().toArray();
+    return members;
   } catch (error) {
     console.error(error);
   }

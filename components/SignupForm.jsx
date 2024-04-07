@@ -13,6 +13,7 @@ const initialState = {
     password: '',
     confirmPassword: '',
     emailNotifications: undefined,
+    profilePublic: undefined
 }
 
 function SubmitButton() {
@@ -35,6 +36,7 @@ const SignupForm = () => {
         <form action={formAction} className="bg-blue-100 p-4 rounded-md mt-6 w-full lg:w-3/5 mx-auto">
             <h1 className="text-2xl font-bold">Become a Sandsharks Member</h1>
             <div className="flex flex-col gap-3 glassmorphism mt-4">
+                <h1>Personal information</h1>
                 <label htmlFor="firstName">First Name</label>
                 <input
                     type="text" 
@@ -75,6 +77,11 @@ const SignupForm = () => {
                     <option value="he/him">He/him</option>
                     <option value="other">Other</option>
                 </select>
+                <div className="flex items-center">
+                    <input type="checkbox" name="profilePublic" />
+                    <label className="ml-2">Check here if you are comfortalbe with your preferred name and pronouns being visible in our members section</label>
+                </div>
+                <h1>Login information</h1>
                 {/* {errors.pronouns && <p className="text-red-500">{errors?.pronouns?.message}</p>} */}
                 <label htmlFor="email">Email</label>
                 <input

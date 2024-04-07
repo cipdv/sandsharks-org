@@ -9,7 +9,7 @@ const AboutTheLeague = () => {
             <br />
             We’ll do our best to pair you up with others around your skill level; we've had members who have played high school, university, college, professional and national level volleyball, and people who have never touched a volleyball before. Most people are somewhere in between.
             <br />
-            Free clinics are offered on most weekends for new players who want to learn how to play the game. 
+            We play 2v2 beach volleyball. Most of the skills from indoor volleyball are the same, though the gameplay can be a bit different, so we offer free clinics most weekends for new players who want to learn how to play the game. 
         </p>
         <h1 className='mt-4'>Where do we play:</h1>
         <p className='mt-2'>

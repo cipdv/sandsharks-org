@@ -1,6 +1,5 @@
 import { login } from "@/app/lib/auth";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 
 const signInPage = () => {
   return (
@@ -9,7 +8,6 @@ const signInPage = () => {
         action={async (formData) => {
           "use server";
           await login(formData);
-          redirect("/dashboard");
         }}
         className="bg-blue-100 p-4 rounded-md mt-6 w-full lg:w-3/5 mx-auto"
       >

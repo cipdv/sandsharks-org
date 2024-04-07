@@ -1,9 +1,9 @@
 import MemberProfile from "@/components/MemberProfile";
-import { getSession } from "@/app/lib/auth";
+import { getCurrentUser } from "@/app/actions";
 
 const profile = async () => {
-  const session = await getSession();
-  const user = session?.resultObj;
+  
+  const user = await getCurrentUser();
 
   return (
     <div>
