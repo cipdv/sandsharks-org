@@ -10,7 +10,6 @@ import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { getSession, encrypt } from "@/app/lib/auth";
-
 //mongoose models
 import Member from "@/app/models/memberModel";
 import Post from "@/app/models/postModel";
