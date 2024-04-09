@@ -1,15 +1,27 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const PostFormSchema = z.object({
-  title: z.string().min(1, 'Title is required'),
-  message: z.string().min(1, 'Message is required'),
-  date: z.string(),
-  startTime: z.string(),
-  endTime: z.string(),
-  beginnerClinic: z.object({
-    beginnerClinicOffered: z.boolean().default(false),
-    beginnerClinicStartTime: z.string(),
-    beginnerClinicEndTime: z.string(),
-  }).optional(),
-  
+  title: z.string().min(1, "Title is required"),
+  message: z.string().min(1, "Message is required"),
+  date: z.string().optional().or(z.literal("")),
+  startTime: z.string().optional().or(z.literal("")),
+  endTime: z.string().optional().or(z.literal("")),
+  beginnerClinic: z
+    .object({
+      beginnerClinicOffered: z.boolean().default(false),
+      beginnerClinicStartTime: z
+        .string()
+        .optional()
+        .or(z.literal(""))
+        .or(z.null()),
+      beginnerClinicEndTime: z
+        .string()
+        .optional()
+        .or(z.literal(""))
+        .or(z.null()),
+      beginnerClinicMessage: z.string().optional().or(z.literal("")),
+      beginnerClinicCourts: z.string().optional().or(z.literal("")),
+    })
+    .optional(),
+  courts: z.string().optional().or(z.literal("")),
 });

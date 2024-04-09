@@ -1,26 +1,24 @@
 "use server";
 
 //database connection
-// import { connectToDb } from "@/app/lib/database";
+import { dbConnection } from "@/app/lib/db";
 //dependencies
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import bcrypt from "bcryptjs";
-import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { getSession, encrypt } from "@/app/lib/auth";
-//mongoose models
-import Member from "@/app/models/memberModel";
-import Post from "@/app/models/postModel";
-import Waiver from "@/app/models/waiverModel";
 //zod schemas
 import {
   MemberSchema,
   MemberUpdateFormSchema,
 } from "@/app/schemas/memberSchema";
 import { PostFormSchema } from "@/app/schemas/postFormSchema";
-import { dbConnection } from "@/app/lib/db";
+
+///////////////////////////////////////////////
+//-----------------MEMBERS-------------------//
+///////////////////////////////////////////////
 
 export const getCurrentUser = async () => {
   const session = await getSession();
@@ -32,99 +30,6 @@ export const getCurrentUser = async () => {
     return currentUser;
   }
   return null;
-};
-
-export const createNewPost = async (prevState, formData) => {
-  //only ultrashark and supersharks can create new posts
-
-  const session = await getSession();
-  if (
-    session?.resultObj?.memberType !== "ultrashark" &&
-    session?.resultObj?.memberType !== "supershark"
-  ) {
-    return { message: "You must be logged in a supershark to create a post" };
-  }
-  const user =
-    session?.resultObj?.preferredName || session?.resultObj?.firstName;
-
-  const result = PostFormSchema.safeParse({
-    title: formData.get("title"),
-    message: formData.get("message"),
-    date: formData.get("date"),
-    startTime: formData.get("startTime"),
-    endTime: formData.get("endTime"),
-    beginnerClinic: {
-      beginnerClinicOffered: formData.get("beginnerClinicOffered")
-        ? true
-        : false,
-      beginnerClinicStartTime: formData.get("beginnerClinicStartTime"),
-      beginnerClinicEndTime: formData.get("beginnerClinicEndTime"),
-    },
-  });
-
-  if (!result.success) {
-    return { message: "Failed to create post" };
-  }
-
-  const {
-    title,
-    message,
-    date,
-    startTime,
-    endTime,
-    beginnerClinicOffered,
-    beginnerClinicStartTime,
-    beginnerClinicEndTime,
-  } = result.data;
-
-  try {
-    const db = await dbConnection();
-
-    const post = {
-      title,
-      message,
-      date,
-      startTime,
-      endTime,
-      beginnerClinic: {
-        offered: beginnerClinicOffered,
-        startTime: beginnerClinicStartTime,
-        endTime: beginnerClinicEndTime,
-      },
-      replies: [],
-      createdAt: new Date(),
-      postedBy: user,
-    };
-
-    await db.collection("posts").insertOne(post);
-
-    revalidatePath("/dashboard");
-    return { message: `Added post: ${title}` };
-  } catch (e) {
-    console.error(e);
-    return { message: "Failed to create post" };
-  }
-};
-
-export const getAllPosts = async () => {
-  //must be logged in to get all posts
-  const session = await getSession();
-  if (!session) {
-    return { message: "You must be logged in to see posts" };
-  }
-
-  try {
-    const db = await dbConnection();
-    const posts = await db
-      .collection("posts")
-      .find()
-      .sort({ createdAt: -1 })
-      .limit(10)
-      .toArray();
-    return posts;
-  } catch (error) {
-    console.error(error);
-  }
 };
 
 export async function registerNewMember(prevState, formData) {
@@ -186,7 +91,7 @@ export async function registerNewMember(prevState, formData) {
       emailNotifications,
       memberType: "pending",
       password: hashedPassword,
-      waiver: false,
+
       createdAt: new Date(),
       profilePublic,
     };
@@ -212,105 +117,6 @@ export async function registerNewMember(prevState, formData) {
   }
   revalidatePath("/");
   redirect("/");
-}
-
-export async function confirmWaiver(formData) {
-  const member = await getSession();
-  if (!member) {
-    return { message: "You must be logged in to confirm the waiver" };
-  }
-
-  const { email, firstName, lastName, _id } = member.resultObj;
-
-  try {
-    const db = await dbConnection();
-
-    const waiver = {
-      memberId: _id,
-      email,
-      firstName,
-      lastName,
-      createdAt: new Date(),
-    };
-
-    await db.collection("waivers").insertOne(waiver);
-
-    revalidatePath("/dashboard/member");
-
-    return { message: "Waiver confirmed" };
-  } catch (error) {
-    console.error(error);
-  }
-
-  redirect("/dashboard/member");
-}
-
-export async function getWaivers() {
-  const session = await getSession();
-  if (!session) {
-    return { message: "You must be logged in" };
-  }
-
-  try {
-    const db = await dbConnection();
-    const waivers = await db.collection("waivers").find().toArray();
-    return waivers;
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-export async function replyToPost(postId) {
-  const session = await getSession();
-  if (!session) {
-    return { message: "You must be logged in to RSVP" };
-  }
-
-  const member = await getCurrentUser();
-  const { email, firstName, lastName, preferredName, _id } = member;
-
-  try {
-    const db = await dbConnection();
-
-    //check if user has already replied
-    const post = await db
-      .collection("posts")
-      .findOne({ _id: new ObjectId(postId) });
-    if (!post) {
-      return { message: "Post not found" };
-    }
-    const hasReplied = post.replies.some(
-      (reply) => reply.userId === _id.toString()
-    );
-
-    if (hasReplied) {
-      await db
-        .collection("posts")
-        .updateOne(
-          { _id: new ObjectId(postId) },
-          { $pull: { replies: { userId: _id.toString() } } }
-        );
-    } else {
-      await db.collection("posts").updateOne(
-        { _id: new ObjectId(postId) },
-        {
-          $push: {
-            replies: {
-              name: preferredName || firstName,
-              email,
-              userId: _id.toString(),
-              createdAt: new Date(),
-            },
-          },
-        }
-      );
-    }
-
-    revalidatePath("/dashboard");
-    return { message: "RSVP confirmed" };
-  } catch (error) {
-    console.error(error);
-  }
 }
 
 export async function updateMemberProfile(formData) {
@@ -442,7 +248,7 @@ export async function deleteMemberProfile(memberId) {
 export async function getAllMembers() {
   const session = await getSession();
   if (!session) {
-    return { message: "You must be logged" };
+    return { message: "You must be logged in to get members list" };
   }
 
   try {
@@ -454,308 +260,355 @@ export async function getAllMembers() {
   }
 }
 
-// "use server";
+///////////////////////////////////////////////
+//-------------------POSTS-------------------//
+///////////////////////////////////////////////
 
-// //database connection
-// import { connectToDb } from "@/app/lib/database";
-// //dependencies
-// import { revalidatePath } from "next/cache";
-// import { redirect } from "next/navigation";
-// import bcrypt from "bcryptjs";
-// import { NextResponse } from "next/server";
-// import { cookies } from "next/headers";
-// import { getSession, encrypt } from "@/app/lib/auth";
-// //mongoose models
-// import Member from "@/app/models/memberModel";
-// import Post from "@/app/models/postModel";
-// import Waiver from "@/app/models/waiverModel";
-// //zod schemas
-// import { MemberSchema } from "@/app/schemas/memberSchema";
-// import { PostFormSchema } from "@/app/schemas/postFormSchema";
+export const createNewPost = async (prevState, formData) => {
+  //only ultrashark and supersharks can create new posts
 
-// export const createNewPost = async (prevState, formData) => {
-//   //only ultrashark and supersharks can create new posts
+  const session = await getSession();
+  if (
+    session?.resultObj?.memberType !== "ultrashark" &&
+    session?.resultObj?.memberType !== "supershark"
+  ) {
+    return { message: "You must be logged in a supershark to create a post" };
+  }
+  const user =
+    session?.resultObj?.preferredName || session?.resultObj?.firstName;
 
-//   const result = PostFormSchema.safeParse({
-//     title: formData.get("title"),
-//     message: formData.get("message"),
-//     date: formData.get("date"),
-//     startTime: formData.get("startTime"),
-//     endTime: formData.get("endTime"),
-//     beginnerClinic: {
-//       beginnerClinicOffered: formData.get("beginnerClinicOffered")
-//         ? true
-//         : false,
-//       beginnerClinicStartTime: formData.get("beginnerClinicStartTime"),
-//       beginnerClinicEndTime: formData.get("beginnerClinicEndTime"),
-//     },
-//   });
+  const result = PostFormSchema.safeParse({
+    title: formData.get("title"),
+    message: formData.get("message"),
+    date: formData.get("date"),
+    startTime: formData.get("startTime"),
+    endTime: formData.get("endTime"),
+    beginnerClinic: {
+      beginnerClinicOffered: formData.get("beginnerClinicOffered")
+        ? true
+        : false,
+      beginnerClinicStartTime: formData.get("beginnerClinicStartTime"),
+      beginnerClinicEndTime: formData.get("beginnerClinicEndTime"),
+      beginnerClinicMessage: formData.get("beginnerClinicMessage"),
+      beginnerClinicCourts: formData.get("beginnerClinicCourts"),
+    },
+  });
 
-//   if (!result.success) {
-//     return { message: "Failed to create post" };
-//   }
+  if (!result.success) {
+    return { message: "Failed to create post" };
+  }
 
-//   const {
-//     title,
-//     message,
-//     date,
-//     startTime,
-//     endTime,
-//     beginnerClinicOffered,
-//     beginnerClinicStartTime,
-//     beginnerClinicEndTime,
-//   } = result.data;
+  console.log(result.data);
 
-//   try {
-//     await connectToDb();
+  const { title, message, date, startTime, endTime } = result.data;
 
-//     const post = new Post({
-//       title,
-//       message,
-//       date,
-//       startTime,
-//       endTime,
-//       beginnerClinic: {
-//         offered: beginnerClinicOffered,
-//         startTime: beginnerClinicStartTime,
-//         endTime: beginnerClinicEndTime,
-//       },
-//       replies: [],
-//       createdAt: new Date(),
-//     });
+  const {
+    beginnerClinicOffered,
+    beginnerClinicStartTime,
+    beginnerClinicEndTime,
+    beginnerClinicMessage,
+    beginnerClinicCourts,
+  } = result.data.beginnerClinic;
 
-//     await post.save();
+  try {
+    const db = await dbConnection();
 
-//     revalidatePath("/dashboard");
-//     return { message: `Added post: ${title}` };
-//   } catch (e) {
-//     console.error(e);
-//     return { message: "Failed to create post" };
-//   }
-// };
+    const post = {
+      title,
+      message,
+      date,
+      startTime,
+      endTime,
+      beginnerClinic: {
+        beginnerClinicOffered: beginnerClinicOffered,
+        beginnerClinicStartTime: beginnerClinicStartTime,
+        beginnerClinicEndTime: beginnerClinicEndTime,
+        beginnerClinicMessage: beginnerClinicMessage,
+        beginnerClinicCourts: beginnerClinicCourts,
+      },
+      replies: [],
+      createdAt: new Date(),
+      postedBy: user,
+    };
 
-// export const getAllPosts = async () => {
-//   //must be logged in to get all posts
+    await db.collection("posts").insertOne(post);
 
-//   try {
-//     await connectToDb();
-//     const posts = await Post.find().sort({ createdAt: -1 }).limit(10);
-//     return posts;
-//   } catch (error) {
-//     console.error(error);
-//   }
-// };
+    revalidatePath("/dashboard");
+    return { message: `Added post: ${title}` };
+  } catch (e) {
+    console.error(e);
+    return { message: "Failed to create post" };
+  }
+};
 
-// export async function registerNewMember(prevState, formData) {
-//   // Convert the form data to an object
-//   const formDataObj = Object.fromEntries(formData.entries());
-//   formDataObj.emailNotifications = formDataObj.emailNotifications === "on";
+export const getAllPosts = async () => {
+  //must be logged in to get all posts
+  const session = await getSession();
+  if (!session) {
+    return { message: "You must be logged in to see posts" };
+  }
 
-//   // Validate the form data
-//   const result = MemberSchema.safeParse(formDataObj);
+  try {
+    const db = await dbConnection();
+    const posts = await db
+      .collection("posts")
+      .find()
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .toArray();
+    return posts;
+  } catch (error) {
+    console.error(error);
+  }
+};
 
-//   if (!result.success) {
-//     return {
-//       message:
-//         "Failed to register: make sure all required fields are completed and try again",
-//     };
-//   }
+export async function replyToPost(postId) {
+  const session = await getSession();
+  if (!session) {
+    return { message: "You must be logged in to RSVP" };
+  }
 
-//   const {
-//     firstName,
-//     lastName,
-//     preferredName,
-//     pronouns,
-//     email,
-//     emailNotifications,
-//     password,
-//     confirmPassword,
-//   } = result.data;
+  const member = await getCurrentUser();
+  const { email, firstName, lastName, preferredName, _id } = member;
 
-//   //check if passwords match
-//   if (password !== confirmPassword) {
-//     return { confirmPassword: "Passwords do not match" };
-//   }
+  try {
+    const db = await dbConnection();
 
-//   try {
-//     await connectToDb();
+    //check if user has already replied
+    const post = await db
+      .collection("posts")
+      .findOne({ _id: new ObjectId(postId) });
+    if (!post) {
+      return { message: "Post not found" };
+    }
+    const hasReplied = post.replies.some(
+      (reply) => reply.userId === _id.toString()
+    );
 
-//     //check if user already exists
-//     const memberExists = await Member.findOne({ email: email });
+    if (hasReplied) {
+      await db
+        .collection("posts")
+        .updateOne(
+          { _id: new ObjectId(postId) },
+          { $pull: { replies: { userId: _id.toString() } } }
+        );
+    } else {
+      await db.collection("posts").updateOne(
+        { _id: new ObjectId(postId) },
+        {
+          $push: {
+            replies: {
+              name: preferredName || firstName,
+              email,
+              userId: _id.toString(),
+              createdAt: new Date(),
+            },
+          },
+        }
+      );
+    }
 
-//     if (memberExists) {
-//       return { email: "This email is already registered" };
-//     }
+    revalidatePath("/dashboard");
+    return { message: "RSVP confirmed" };
+  } catch (error) {
+    console.error(error);
+  }
+}
 
-//     //hash password
-//     const salt = await bcrypt.genSalt(10);
-//     const hashedPassword = await bcrypt.hash(password, salt);
+export async function replyToBeginnerClinic(postId) {
+  const session = await getSession();
+  if (!session) {
+    return { message: "You must be logged in to RSVP" };
+  }
 
-//     //create new user
-//     const newMember = new Member({
-//       firstName,
-//       lastName,
-//       preferredName,
-//       pronouns,
-//       email,
-//       emailNotifications,
-//       memberType: "pending",
-//       password: hashedPassword,
-//       waiver: false,
-//       createdAt: new Date(),
-//     });
+  const member = await getCurrentUser();
+  const { email, firstName, lastName, preferredName, _id } = member;
 
-//     await newMember.save();
+  try {
+    const db = await dbConnection();
 
-//     //remove password from the object
-//     let resultObj = newMember.toObject();
-//     delete resultObj.password;
+    //check if user has already replied
+    const post = await db
+      .collection("posts")
+      .findOne({ _id: new ObjectId(postId) });
+    if (!post) {
+      return { message: "Post not found" };
+    }
+    const hasReplied = post?.beginnerClinic?.beginnerClinicReplies?.some(
+      (reply) => reply.userId === _id.toString()
+    );
 
-//     // Create the session
-//     const expires = new Date(Date.now() + 10 * 60 * 1000);
-//     const session = await encrypt({ resultObj, expires });
+    if (hasReplied) {
+      await db.collection("posts").updateOne(
+        { _id: new ObjectId(postId) },
+        {
+          $pull: {
+            "beginnerClinic.beginnerClinicReplies": {
+              userId: _id.toString(),
+            },
+          },
+        }
+      );
+    } else {
+      await db.collection("posts").updateOne(
+        { _id: new ObjectId(postId) },
+        {
+          $push: {
+            "beginnerClinic.beginnerClinicReplies": {
+              name: preferredName || firstName,
+              email,
+              userId: _id.toString(),
+              createdAt: new Date(),
+            },
+          },
+        }
+      );
+    }
 
-//     // Save the session in a cookie
-//     cookies().set("session", session, { expires, httpOnly: true });
-//   } catch (error) {
-//     console.log(error);
-//     return {
-//       message:
-//         "Failed to register: make sure all required fields are completed and try again",
-//     };
-//   }
-//   revalidatePath("/");
-//   redirect("/");
-// }
+    revalidatePath("/dashboard");
+    return { message: "RSVP confirmed" };
+  } catch (error) {
+    console.error(error);
+  }
+}
 
-// export async function confirmWaiver(formData) {
-//   const member = await getSession();
-//   if (!member) {
-//     return { message: "You must be logged in to confirm the waiver" };
-//   }
+export async function updatePost(prevState, formData) {
+  const session = await getSession();
+  if (session?.resultObj?.memberType !== "ultrashark") {
+    return { message: "You must be logged in as ultrashark to update a post" };
+  }
 
-//   const { email, firstName, lastName, _id } = member.resultObj;
+  const result = PostFormSchema.safeParse({
+    title: formData.get("title"),
+    message: formData.get("message"),
+    date: formData.get("date"),
+    startTime: formData.get("startTime"),
+    endTime: formData.get("endTime"),
+    beginnerClinic: {
+      beginnerClinicOffered: formData.get("beginnerClinicOffered")
+        ? true
+        : false,
+      beginnerClinicStartTime: formData.get("beginnerClinicStartTime"),
+      beginnerClinicEndTime: formData.get("beginnerClinicEndTime"),
+      beginnerClinicMessage: formData.get("beginnerClinicMessage"),
+      beginnerClinicCourts: formData.get("beginnerClinicCourts"),
+    },
+    courts: formData.get("courts"),
+  });
 
-//   try {
-//     await connectToDb();
+  if (!result.success) {
+    console.log(result.error);
+    return { message: "Failed to update post" };
+  }
 
-//     const waiver = new Waiver({
-//       memberId: _id,
-//       email,
-//       firstName,
-//       lastName,
-//       createdAt: new Date(),
-//     });
+  const postId = formData.get("postId");
 
-//     await waiver.save();
+  const user =
+    session?.resultObj?.preferredName || session?.resultObj?.firstName;
 
-//     revalidatePath("/dashboard/member");
+  const { title, message, date, startTime, endTime, courts } = result.data;
 
-//     return { message: "Waiver confirmed" };
-//   } catch (error) {
-//     console.error(error);
-//   }
+  const {
+    beginnerClinicOffered,
+    beginnerClinicStartTime,
+    beginnerClinicEndTime,
+    beginnerClinicMessage,
+    beginnerClinicCourts,
+  } = result.data.beginnerClinic;
 
-//   redirect("/dashboard/member");
-// }
+  try {
+    const db = await dbConnection();
 
-// export async function getWaivers() {
-//   try {
-//     await connectToDb();
-//     const waivers = await Waiver.find();
-//     return waivers;
-//   } catch (error) {
-//     console.error(error);
-//   }
-// }
+    await db.collection("posts").updateOne(
+      { _id: new ObjectId(postId) },
+      {
+        $set: {
+          title,
+          message,
+          date,
+          startTime,
+          endTime,
+          "beginnerClinic.beginnerClinicOffered": beginnerClinicOffered,
+          "beginnerClinic.beginnerClinicStartTime": beginnerClinicStartTime,
+          "beginnerClinic.beginnerClinicEndTime": beginnerClinicEndTime,
+          "beginnerClinic.beginnerClinicMessage": beginnerClinicMessage,
+          "beginnerClinic.beginnerClinicCourts": beginnerClinicCourts,
+          courts,
+          postedBy: user,
+        },
+      }
+    );
 
-// export async function replyToPost(postId) {
-//   const member = await getSession();
-//   if (!member) {
-//     return { message: "You must be logged in to RSVP" };
-//   }
+    revalidatePath("/dashboard/ultrashark/posts");
+    return { message: "Post updated" };
+  } catch (error) {
+    console.error(error);
+  }
+}
 
-//   const { email, firstName, lastName, preferredName, _id } = member.resultObj;
+export async function deletePost(postId) {
+  const session = await getSession();
+  if (session?.resultObj?.memberType !== "ultrashark") {
+    return { message: "You must be logged in as ultrashark to delete a post" };
+  }
 
-//   //check if user has already replied
-//   const post = await Post.findById(postId);
-//   if (!post) {
-//     return { message: "Post not found" };
-//   }
-//   const hasReplied = post?.replies?.some((reply) => reply.userId === _id);
+  try {
+    const db = await dbConnection();
+    await db.collection("posts").deleteOne({ _id: new ObjectId(postId) });
 
-//   try {
-//     await connectToDb();
+    revalidatePath("/dashboard/ultrashark/posts");
+    return { message: "Post deleted" };
+  } catch (error) {
+    console.error(error);
+  }
+}
 
-//     if (hasReplied) {
-//       post.replies = post.replies.filter((reply) => reply.userId !== _id);
-//     } else {
-//       post.replies.push({
-//         name: preferredName || firstName,
-//         email,
-//         userId: _id,
-//         createdAt: new Date(),
-//       });
-//     }
+///////////////////////////////////////////////
+//-----------------WAIVERS-------------------//
+///////////////////////////////////////////////
 
-//     await post.save();
+export async function confirmWaiver(formData) {
+  const member = await getSession();
+  if (!member) {
+    return { message: "You must be logged in to confirm the waiver" };
+  }
 
-//     revalidatePath("/dashboard");
-//     return { message: "RSVP confirmed" };
-//   } catch (error) {
-//     console.error(error);
-//   }
-// }
+  const { email, firstName, lastName, _id } = member.resultObj;
 
-// export async function updateMemberProfile(formData) {
-//   const member = await getSession();
-//   if (!member) {
-//     return { message: "You must be logged in to update your profile" };
-//   }
+  try {
+    const db = await dbConnection();
 
-//   const { _id } = member.resultObj;
+    const waiver = {
+      memberId: _id,
+      email,
+      firstName,
+      lastName,
+      createdAt: new Date(),
+    };
 
-//   const formDataObj = Object.fromEntries(formData.entries());
-//   formDataObj.emailNotifications = formDataObj.emailNotifications === "on";
+    await db.collection("waivers").insertOne(waiver);
 
-//   const result = MemberSchema.safeParse(formDataObj);
+    revalidatePath("/dashboard/member");
 
-//   if (!result.success) {
-//     return {
-//       message:
-//         "Failed to update profile: make sure all required fields are completed and try again",
-//     };
-//   }
+    return { message: "Waiver confirmed" };
+  } catch (error) {
+    console.error(error);
+  }
 
-//   const {
-//     firstName,
-//     lastName,
-//     preferredName,
-//     pronouns,
-//     email,
-//     emailNotifications,
-//   } = result.data;
+  redirect("/dashboard/member");
+}
 
-//   try {
-//     await connectToDb();
+export async function getWaivers() {
+  const session = await getSession();
+  if (!session) {
+    return { message: "You must be logged in" };
+  }
 
-//     const member = await Member.findById(_id);
-//     if (!member) {
-//       return { message: "Member not found" };
-//     }
-
-//     member.firstName = firstName;
-//     member.lastName = lastName;
-//     member.preferredName = preferredName;
-//     member.pronouns = pronouns;
-//     member.email = email;
-//     member.emailNotifications = emailNotifications;
-
-//     await member.save();
-
-//     revalidatePath("/dashboard/member");
-//     return { message: "Profile updated" };
-//   } catch (error) {
-//     console.error(error);
-//   }
-// }
+  try {
+    const db = await dbConnection();
+    const waivers = await db.collection("waivers").find().toArray();
+    return waivers;
+  } catch (error) {
+    console.error(error);
+  }
+}

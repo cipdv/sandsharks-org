@@ -25,14 +25,14 @@ const Navbar = async () => {
               redirect("/");
             }}
           >
-            <button type="submit" className="btn">
+            <button type="submit" className="btn whitespace-nowrap">
               Sign out
             </button>
           </form>
         </>
       ) : (
         <Link href="/signin">
-          <button className="btn">Sign In</button>
+          <button className="btn whitespace-nowrap">Sign In</button>
         </Link>
       )}
     </div>

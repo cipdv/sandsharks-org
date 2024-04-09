@@ -1,25 +1,16 @@
-import { getAllPosts } from "@/app/actions"
-import MemberDashboard from "@/components/MemberDashboard"
-import UltrasharkDashboard from "@/components/UltrasharkDashboard"
-import { getSession, logout } from "@/app/lib/auth"
-import { redirect } from "next/navigation"
-
 const dashboard = async () => {
+  // const session = await getSession()
+  // const userObj = JSON.stringify(session, null, 2)
+  // const user = session?.resultObj
+  // const posts = await getAllPosts()
 
-    const session = await getSession()
-    const userObj = JSON.stringify(session, null, 2)
-    const user = session?.resultObj
-    const posts = await getAllPosts()
-
-    return (
-      <>
-        dashboard placeholder
-          {/* {(user?.memberType === 'pending' || user?.memberType === 'member') && <MemberDashboard user={user} posts={posts} />}
+  return (
+    <>
+      dashboard placeholder
+      {/* {(user?.memberType === 'pending' || user?.memberType === 'member') && <MemberDashboard user={user} posts={posts} />}
           {user?.memberType === 'ultrashark' && <UltrasharkDashboard user={user} posts={posts} />} */}
-      </>
-            
-    )
-}
+    </>
+  );
+};
 
-export default dashboard
-
+export default dashboard;

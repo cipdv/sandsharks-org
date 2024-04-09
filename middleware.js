@@ -2,60 +2,45 @@ import { updateSession, decrypt } from "@/app/lib/cookieFunctions";
 import { NextResponse } from "next/server";
 
 export async function middleware(request) {
-    console.log("middleware ran successfully");
-  
-    const currentUser = request.cookies.get("session")?.value;
-  
-    let currentUserObj = null;
-    if (currentUser) {
-      currentUserObj = await decrypt(currentUser);
-    }
-  
-    const memberType = currentUserObj?.resultObj?.memberType;
-  
-    if (!currentUser && !['/', '/signin', '/signup'].includes(request.nextUrl.pathname)) {       
-         return NextResponse.redirect(new URL("/signin", request.url));
-    }
+  console.log("middleware ran successfully");
 
-    const dashboardPaths = {
-        "ultrashark": "/dashboard/ultrashark",
-        "member": "/dashboard/member",
-        "pending": "/dashboard/member"
-    };
+  const currentUser = request.cookies.get("session")?.value;
 
-    if (currentUser && !request.nextUrl.pathname.startsWith(dashboardPaths[memberType])) {
-        return NextResponse.redirect(new URL(dashboardPaths[memberType], request.url));
-    }
-
-    // if (
-    //   currentUser &&
-    //   memberType === "ultrashark" &&
-    //   !request.nextUrl.pathname.startsWith("/dashboard/ultrashark")
-    // ) {
-    //   return NextResponse.redirect(new URL("/dashboard/ultrashark", request.url));
-    // }
-  
-    // if (
-    //   currentUser &&
-    //   memberType === "member" &&
-    //   !request.nextUrl.pathname.startsWith("/dashboard/member")
-    // ) {
-    //   return NextResponse.redirect(new URL("/dashboard/member", request.url));
-    // }
-  
-    // if (
-    //   currentUser &&
-    //   memberType === "pending" &&
-    //   !request.nextUrl.pathname.startsWith("/dashboard/member")
-    // ) {
-    //   return NextResponse.redirect(new URL("/dashboard/member", request.url));
-    // }
-  
-    return await updateSession(request);
+  let currentUserObj = null;
+  if (currentUser) {
+    currentUserObj = await decrypt(currentUser);
   }
-  
-  export const config = {
-    matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/(api|trpc)(.*)"],
+
+  const memberType = currentUserObj?.resultObj?.memberType;
+
+  if (
+    !currentUser &&
+    !["/", "/signin", "/signup"].includes(request.nextUrl.pathname)
+  ) {
+    return NextResponse.redirect(new URL("/signin", request.url));
+  }
+
+  const dashboardPaths = {
+    ultrashark: "/dashboard/ultrashark",
+    supershark: "/dashboard/ultrashark",
+    member: "/dashboard/member",
+    pending: "/dashboard/member",
   };
+
+  if (
+    currentUser &&
+    !request.nextUrl.pathname.startsWith(dashboardPaths[memberType])
+  ) {
+    return NextResponse.redirect(
+      new URL(dashboardPaths[memberType], request.url)
+    );
+  }
+
+  return await updateSession(request);
+}
+
+export const config = {
+  matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/(api|trpc)(.*)"],
+};
 
 //good to know: middleware can get ip address from request.headers.get('x-real-ip')
