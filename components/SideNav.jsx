@@ -23,7 +23,7 @@ const SideNav = () => {
       <Link href="/dashboard/member/profile">
         <div className="p-6 hover:bg-gray-200 bg-orange-200">
           <h1 className="cursor-pointer">
-            Update your profile - tell us about yourself :)
+            Update your profile - tell us about yourself :D
           </h1>
         </div>
       </Link>
