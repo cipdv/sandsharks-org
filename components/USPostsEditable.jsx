@@ -115,11 +115,11 @@ const USPostsEditable = ({ posts, user }) => {
                       />
                       <label className="ml-2">Beginner Clinic Offered</label>
                     </div>
-                    <div className="min-h-[200px] w-full">
+                    <div className="min-h-[200px] w-full mt-4">
                       <label>Beginner Clinic Message</label>
                       <textarea
                         name="beginnerClinicMessage"
-                        className="w-full"
+                        className="w-full h-32" // Set the initial height to 32 tailwind units
                         defaultValue={
                           post?.beginnerClinic?.beginnerClinicMessage
                         }

@@ -12,7 +12,7 @@ const MemberDash = async () => {
   const waivers = await getWaivers();
 
   const hasWaiver = waivers.some(
-    (waiver) => waiver.memberId === user._id.toString()
+    (waiver) => waiver?.memberId === user?._id?.toString()
   );
 
   return (

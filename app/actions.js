@@ -26,7 +26,7 @@ export const getCurrentUser = async () => {
     const _id = new ObjectId(session.resultObj._id);
     const db = await dbConnection();
     const currentUser = await db.collection("members").findOne({ _id });
-    delete currentUser.password;
+    delete currentUser?.password;
     return currentUser;
   }
   return null;
@@ -38,8 +38,35 @@ export async function registerNewMember(prevState, formData) {
   formDataObj.emailNotifications = formDataObj.emailNotifications === "on";
   formDataObj.profilePublic = formDataObj.profilePublic === "on";
 
+  // Normalize the email address
+  formDataObj.email = formDataObj.email.toLowerCase().trim();
+
+  // Capitalize the first letter of the first name and preferred name
+  formDataObj.firstName =
+    formDataObj.firstName.charAt(0).toUpperCase() +
+    formDataObj.firstName.slice(1);
+  formDataObj.preferredName =
+    formDataObj.preferredName.charAt(0).toUpperCase() +
+    formDataObj.preferredName.slice(1);
+
   // Validate the form data
   const result = MemberSchema.safeParse(formDataObj);
+
+  if (result.error) {
+    console.log("error", result.error.issues);
+    // Find the error related to the password length
+    const passwordError = result.error.issues.find(
+      (issue) =>
+        issue.path[0] === "password" &&
+        issue.type === "string" &&
+        issue.minimum === 6
+    );
+
+    // If the error exists, return a custom message
+    if (passwordError) {
+      return { password: "^ Password must be at least 6 characters long" };
+    }
+  }
 
   if (!result.success) {
     return {
@@ -62,7 +89,7 @@ export async function registerNewMember(prevState, formData) {
 
   //check if passwords match
   if (password !== confirmPassword) {
-    return { confirmPassword: "Passwords do not match" };
+    return { confirmPassword: "^ Passwords do not match" };
   }
 
   try {
@@ -74,7 +101,7 @@ export async function registerNewMember(prevState, formData) {
       .findOne({ email: email });
 
     if (memberExists) {
-      return { email: "This email is already registered" };
+      return { email: "^ This email is already registered" };
     }
 
     //hash password
@@ -91,7 +118,6 @@ export async function registerNewMember(prevState, formData) {
       emailNotifications,
       memberType: "pending",
       password: hashedPassword,
-
       createdAt: new Date(),
       profilePublic,
     };
@@ -119,7 +145,7 @@ export async function registerNewMember(prevState, formData) {
   redirect("/");
 }
 
-export async function updateMemberProfile(formData) {
+export async function updateMemberProfile(prevState, formData) {
   const session = await getSession();
   if (!session) {
     return { message: "You must be logged in to update your profile" };

@@ -1,5 +1,3 @@
-"use server";
-
 import { replyToPost, replyToBeginnerClinic } from "@/app/actions";
 
 const Posts = async ({ posts, user }) => {

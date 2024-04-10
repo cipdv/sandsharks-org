@@ -2,13 +2,12 @@
 
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
-import { NextRequest, NextResponse } from "next/server";
-// import { connectToDb } from "@/app/lib/database";
-import Member from "@/app/models/memberModel";
+import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { dbConnection } from "@/app/lib/db";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { loginSchema } from "@/app/schemas/memberSchema";
 
 const secretKey = process.env.SECRET_KEY;
 const key = new TextEncoder().encode(secretKey);
@@ -28,23 +27,32 @@ export async function decrypt(input) {
   return payload;
 }
 
-export async function login(formData) {
-  // Verify credentials && get the user
+export async function login(prevState, formData) {
+  // Convert the form data to an object
+  const formDataObj = Object.fromEntries(formData.entries());
+  formDataObj.rememberMe = formDataObj.rememberMe === "on";
 
-  const user = {
-    email: formData.get("email"),
-    password: formData.get("password"),
-  };
+  // Normalize the email address
+  formDataObj.email = formDataObj.email.toLowerCase().trim();
+
+  // Validate the form data
+  const { success, data, error } = loginSchema.safeParse(formDataObj);
+
+  if (!success) {
+    return { message: error.message };
+  }
+
+  const user = data;
 
   const db = await dbConnection();
   const result = await db.collection("members").findOne({ email: user.email });
 
   if (!result) {
-    return new NextResponse(400, { error: "invalid credentials" });
+    return { message: "Invalid credentials" };
   }
   const passwordsMatch = await bcrypt.compare(user.password, result.password);
   if (!passwordsMatch) {
-    return new NextResponse(400, { error: "invalid credentials" });
+    return { message: "Invalid credentials" };
   }
 
   //remove password from the object
@@ -52,27 +60,39 @@ export async function login(formData) {
   delete resultObj.password;
 
   // Create the session
-  const expires = new Date(Date.now() + 10 * 60 * 1000);
+  const expires = user.rememberMe
+    ? new Date(Date.now() + 6 * 30 * 24 * 60 * 60 * 1000)
+    : new Date(Date.now() + 10 * 60 * 1000);
   const session = await encrypt({ resultObj, expires });
 
   // Save the session in a cookie
   cookies().set("session", session, { expires, httpOnly: true });
 
-  revalidatePath("/");
+  revalidatePath("/dashboard");
   redirect("/dashboard");
 }
 
 // export async function login(formData) {
-//   // Verify credentials && get the user
+//   // Validate form data
+//   const { success, data, error } = loginSchema.safeParse({
+//     email: formData.get("email")
+//       ? formData.get("email").toLowerCase().trim()
+//       : "",
+//     password: formData.get("password") || "",
+//     rememberMe: formData.get("rememberMe") === "on",
+//   });
 
-//   const user = {
-//     email: formData.get("email"),
-//     password: formData.get("password"),
-//   };
+//   if (!success) {
+//     console.log("no success", error);
+//     return new NextResponse(400, { error: error.message });
+//   }
+
+//   const user = data;
 //   console.log("user", user);
-//   await connectToDb();
-//   const result = await Member.findOne({ email: user.email });
-//   console.log("result", result);
+
+//   const db = await dbConnection();
+//   const result = await db.collection("members").findOne({ email: user.email });
+
 //   if (!result) {
 //     return new NextResponse(400, { error: "invalid credentials" });
 //   }
@@ -82,15 +102,20 @@ export async function login(formData) {
 //   }
 
 //   //remove password from the object
-//   let resultObj = result.toObject();
+//   let resultObj = { ...result };
 //   delete resultObj.password;
 
 //   // Create the session
-//   const expires = new Date(Date.now() + 10 * 60 * 1000);
+//   const expires = user.rememberMe
+//     ? new Date(Date.now() + 6 * 30 * 24 * 60 * 60 * 1000)
+//     : new Date(Date.now() + 10 * 60 * 1000);
 //   const session = await encrypt({ resultObj, expires });
 
 //   // Save the session in a cookie
 //   cookies().set("session", session, { expires, httpOnly: true });
+
+//   revalidatePath("/dashboard");
+//   redirect("/dashboard");
 // }
 
 export async function logout() {
