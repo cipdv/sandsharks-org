@@ -53,7 +53,6 @@ export async function registerNewMember(prevState, formData) {
   const result = MemberSchema.safeParse(formDataObj);
 
   if (result.error) {
-    console.log("error", result.error.issues);
     // Find the error related to the password length
     const passwordError = result.error.issues.find(
       (issue) =>
@@ -62,17 +61,31 @@ export async function registerNewMember(prevState, formData) {
         issue.minimum === 6
     );
 
+    const confirmPasswordError = result.error.issues.find(
+      (issue) =>
+        issue.path[0] === "confirmPassword" &&
+        issue.type === "string" &&
+        issue.minimum === 6
+    );
+
     // If the error exists, return a custom message
     if (passwordError) {
       return { password: "^ Password must be at least 6 characters long" };
     }
-  }
 
-  if (!result.success) {
-    return {
-      message:
-        "Failed to register: make sure all required fields are completed and try again",
-    };
+    if (confirmPasswordError) {
+      return {
+        confirmPassword:
+          "^ Passwords must be at least 6 characters long and match",
+      };
+    }
+
+    if (!result.success) {
+      return {
+        message:
+          "Failed to register: make sure all required fields are completed and try again",
+      };
+    }
   }
 
   const {
@@ -284,6 +297,25 @@ export async function getAllMembers() {
   } catch (error) {
     console.error(error);
   }
+}
+
+export async function sendPasswordReset(prevState, formData) {
+  const email = formData.get("email");
+  console.log(email);
+  if (email) {
+    return {
+      message:
+        "If this email is registered, a link to reset your password will be sent to your email.",
+    };
+  }
+  //send email with password reset link if there is an email, return message "if email exists, we will send a password reset link to it"
+
+  // try {
+  //   const db = await dbConnection();
+  //   const member = await db.collection("members").findOne({ email });
+  // } catch (error) {
+  //   console.error(error);
+  // }
 }
 
 ///////////////////////////////////////////////

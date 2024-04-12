@@ -15,7 +15,9 @@ export async function middleware(request) {
 
   if (
     !currentUser &&
-    !["/", "/signin", "/signup"].includes(request.nextUrl.pathname)
+    !["/", "/signin", "/signup", "/password-reset"].includes(
+      request.nextUrl.pathname
+    )
   ) {
     return NextResponse.redirect(new URL("/signin", request.url));
   }

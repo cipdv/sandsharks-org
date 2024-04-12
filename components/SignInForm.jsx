@@ -3,6 +3,7 @@
 import { login } from "@/app/lib/auth";
 import { useFormState, useFormStatus } from "react-dom";
 import Link from "next/link";
+import { useState } from "react";
 
 const initialState = {
   email: "",
@@ -23,6 +24,12 @@ function SubmitButton() {
 const SignInForm = () => {
   const [state, formAction] = useFormState(login, initialState);
 
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
     <form
       action={formAction}
@@ -35,13 +42,22 @@ const SignInForm = () => {
         required
         className="block mb-4"
       />
-      <input
-        type="password"
-        placeholder="Password"
-        name="password"
-        required
-        className="block"
-      />
+      <div className="flex items-center">
+        <input
+          type={showPassword ? "text" : "password"}
+          placeholder="Password"
+          name="password"
+          required
+          className="block mr-2 flex-grow"
+        />
+        <button
+          type="button"
+          onClick={togglePasswordVisibility}
+          className="ml-2"
+        >
+          {showPassword ? "Hide password" : "Show password"}
+        </button>
+      </div>
       {state?.email && (
         <p className="text-red-500 text-lg text-bold">{state?.email}</p>
       )}
@@ -56,6 +72,9 @@ const SignInForm = () => {
         <Link href="/signup">
           Haven't signed up yet? Click here to sign up.
         </Link>
+      </h2>
+      <h2 className="mt-4 text-black">
+        <Link href="/password-reset">Forgot your password? Click here.</Link>
       </h2>
     </form>
   );
