@@ -80,6 +80,18 @@ export async function registerNewMember(prevState, formData) {
       };
     }
 
+    const emailError = result.error.issues.find((issue) => {
+      return (
+        issue.path[0] === "email" &&
+        issue.validation === "email" &&
+        issue.code === "invalid_string"
+      );
+    });
+
+    if (emailError) {
+      return { email: "^ Please enter a valid email address" };
+    }
+
     if (!result.success) {
       return {
         message:
