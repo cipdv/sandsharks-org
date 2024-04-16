@@ -410,7 +410,7 @@ export async function setNewPassword(prevState, formData) {
   });
 
   if (!member) {
-    return { error: "Password reset token is invalid or has expired" };
+    return { error: "Password reset token is invalid or has expired." };
   }
 
   const salt = await bcrypt.genSalt(10);
@@ -424,7 +424,7 @@ export async function setNewPassword(prevState, formData) {
     }
   );
 
-  return { message: "Password reset successful" };
+  return { message: "Password reset successful." };
 }
 
 ///////////////////////////////////////////////
