@@ -4,7 +4,7 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import { dbConnection } from "@/app/lib/db";
+import dbConnection from "@/app/lib/db";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { loginSchema } from "@/app/schemas/memberSchema";
@@ -44,7 +44,8 @@ export async function login(prevState, formData) {
 
   const user = data;
 
-  const db = await dbConnection();
+  const dbClient = await dbConnection;
+  const db = await dbClient.db("Sandsharks");
   const result = await db.collection("members").findOne({ email: user.email });
 
   if (!result) {

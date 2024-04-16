@@ -1,7 +1,7 @@
 "use server";
 
 //database connection
-import { dbConnection } from "@/app/lib/db";
+import dbConnection from "@/app/lib/db";
 //dependencies
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
@@ -26,7 +26,8 @@ export const getCurrentUser = async () => {
   const session = await getSession();
   if (session) {
     const _id = new ObjectId(session.resultObj._id);
-    const db = await dbConnection();
+    const dbClient = await dbConnection;
+    const db = await dbClient.db("Sandsharks");
     const currentUser = await db.collection("members").findOne({ _id });
     delete currentUser?.password;
     return currentUser;
@@ -120,7 +121,8 @@ export async function registerNewMember(prevState, formData) {
   }
 
   try {
-    const db = await dbConnection();
+    const dbClient = await dbConnection;
+    const db = await dbClient.db("Sandsharks");
 
     //check if user already exists
     const memberExists = await db
@@ -205,7 +207,8 @@ export async function updateMemberProfile(prevState, formData) {
     profilePublic,
   } = result.data;
 
-  const db = await dbConnection();
+  const dbClient = await dbConnection;
+  const db = await dbClient.db("Sandsharks");
 
   const member = await db
     .collection("members")
@@ -242,7 +245,8 @@ export async function approveMemberProfile(memberId) {
   }
 
   try {
-    const db = await dbConnection();
+    const dbClient = await dbConnection;
+    const db = await dbClient.db("Sandsharks");
     await db
       .collection("members")
       .updateOne(
@@ -264,7 +268,8 @@ export async function deactivateMemberProfile(memberId) {
   }
 
   try {
-    const db = await dbConnection();
+    const dbClient = await dbConnection;
+    const db = await dbClient.db("Sandsharks");
     await db
       .collection("members")
       .updateOne(
@@ -288,7 +293,8 @@ export async function deleteMemberProfile(memberId) {
   }
 
   try {
-    const db = await dbConnection();
+    const dbClient = await dbConnection;
+    const db = await dbClient.db("Sandsharks");
     await db.collection("members").deleteOne({ _id: new ObjectId(memberId) });
 
     revalidatePath("/dashboard/ultrashark/members");
@@ -305,7 +311,8 @@ export async function getAllMembers() {
   }
 
   try {
-    const db = await dbConnection();
+    const dbClient = await dbConnection;
+    const db = await dbClient.db("Sandsharks");
     const members = await db.collection("members").find().toArray();
     return members;
   } catch (error) {
@@ -318,7 +325,8 @@ export async function sendPasswordReset(prevState, formData) {
   const to = formData.get("email");
 
   //check if the email is in the database
-  const db = await dbConnection();
+  const dbClient = await dbConnection;
+  const db = await dbClient.db("Sandsharks");
   const member = await db.collection("members").findOne({ email: to });
 
   if (!member) {
@@ -403,7 +411,8 @@ export async function setNewPassword(prevState, formData) {
     return { error: "Passwords do not match" };
   }
 
-  const db = await dbConnection();
+  const dbClient = await dbConnection;
+  const db = await dbClient.db("Sandsharks");
   const member = await db.collection("members").findOne({
     passwordResetToken: token,
     passwordResetExpires: { $gt: Date.now() },
@@ -478,7 +487,8 @@ export const createNewPost = async (prevState, formData) => {
   } = result.data.beginnerClinic;
 
   try {
-    const db = await dbConnection();
+    const dbClient = await dbConnection;
+    const db = await dbClient.db("Sandsharks");
 
     const post = {
       title,
@@ -516,7 +526,8 @@ export const getAllPosts = async () => {
   }
 
   try {
-    const db = await dbConnection();
+    const dbClient = await dbConnection;
+    const db = await dbClient.db("Sandsharks");
     const posts = await db
       .collection("posts")
       .find()
@@ -539,7 +550,8 @@ export async function replyToPost(postId) {
   const { email, firstName, lastName, preferredName, _id } = member;
 
   try {
-    const db = await dbConnection();
+    const dbClient = await dbConnection;
+    const db = await dbClient.db("Sandsharks");
 
     //check if user has already replied
     const post = await db
@@ -592,7 +604,8 @@ export async function replyToBeginnerClinic(postId) {
   const { email, firstName, lastName, preferredName, _id } = member;
 
   try {
-    const db = await dbConnection();
+    const dbClient = await dbConnection;
+    const db = await dbClient.db("Sandsharks");
 
     //check if user has already replied
     const post = await db
@@ -686,7 +699,8 @@ export async function updatePost(prevState, formData) {
   } = result.data.beginnerClinic;
 
   try {
-    const db = await dbConnection();
+    const dbClient = await dbConnection;
+    const db = await dbClient.db("Sandsharks");
 
     await db.collection("posts").updateOne(
       { _id: new ObjectId(postId) },
@@ -722,7 +736,8 @@ export async function deletePost(postId) {
   }
 
   try {
-    const db = await dbConnection();
+    const dbClient = await dbConnection;
+    const db = await dbClient.db("Sandsharks");
     await db.collection("posts").deleteOne({ _id: new ObjectId(postId) });
 
     revalidatePath("/dashboard/ultrashark/posts");
@@ -745,7 +760,8 @@ export async function confirmWaiver(formData) {
   const { email, firstName, lastName, _id } = member.resultObj;
 
   try {
-    const db = await dbConnection();
+    const dbClient = await dbConnection;
+    const db = await dbClient.db("Sandsharks");
 
     const waiver = {
       memberId: _id,
@@ -774,7 +790,8 @@ export async function getWaivers() {
   }
 
   try {
-    const db = await dbConnection();
+    const dbClient = await dbConnection;
+    const db = await dbClient.db("Sandsharks");
     const waivers = await db.collection("waivers").find().toArray();
     return waivers;
   } catch (error) {
