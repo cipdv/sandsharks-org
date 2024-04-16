@@ -2,8 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 
 const MembersSection = ({ members, session }) => {
-  console.log(session);
-
   if (session.resultObj.memberType === "member") {
     return (
       <div className="mx-auto text-center">

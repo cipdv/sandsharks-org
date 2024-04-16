@@ -15,8 +15,16 @@ export async function middleware(request) {
 
   if (
     !currentUser &&
-    !["/", "/signin", "/signup", "/password-reset"].includes(
-      request.nextUrl.pathname
+    ![
+      "/",
+      "/signin",
+      "/signup",
+      "/password-reset",
+      new RegExp("^/password-reset/set-new-password/.*$"),
+    ].some((path) =>
+      typeof path === "string"
+        ? path === request.nextUrl.pathname
+        : path.test(request.nextUrl.pathname)
     )
   ) {
     return NextResponse.redirect(new URL("/signin", request.url));
@@ -24,7 +32,7 @@ export async function middleware(request) {
 
   const dashboardPaths = {
     ultrashark: "/dashboard/ultrashark",
-    supershark: "/dashboard/ultrashark",
+    supershark: "/dashboard/supershark",
     member: "/dashboard/member",
     pending: "/dashboard/member",
   };

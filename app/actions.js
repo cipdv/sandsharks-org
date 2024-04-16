@@ -9,6 +9,8 @@ import { redirect } from "next/navigation";
 import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
 import { getSession, encrypt } from "@/app/lib/auth";
+import nodemailer from "nodemailer";
+import crypto from "crypto";
 //zod schemas
 import {
   MemberSchema,
@@ -312,22 +314,117 @@ export async function getAllMembers() {
 }
 
 export async function sendPasswordReset(prevState, formData) {
-  const email = formData.get("email");
-  console.log(email);
-  if (email) {
+  const { SMTP_EMAIL, SMTP_PASSWORD } = process.env;
+  const to = formData.get("email");
+
+  //check if the email is in the database
+  const db = await dbConnection();
+  const member = await db.collection("members").findOne({ email: to });
+
+  if (!member) {
     return {
       message:
-        "If this email is registered, a link to reset your password will be sent to your email.",
+        "If this email is registered, a link to reset your password will be sent to this email address.",
     };
   }
-  //send email with password reset link if there is an email, return message "if email exists, we will send a password reset link to it"
 
-  // try {
-  //   const db = await dbConnection();
-  //   const member = await db.collection("members").findOne({ email });
-  // } catch (error) {
-  //   console.error(error);
-  // }
+  //assign a token and save to database
+  const token = crypto.randomBytes(20).toString("hex");
+  const tokenExpires = Date.now() + 3600000; // 1 hour from now  console.log("token", token);
+  await db.collection("members").updateOne(
+    { email: to },
+    {
+      $set: { passwordResetToken: token, passwordResetExpires: tokenExpires },
+    }
+  );
+  //send link to change password with token
+  const resetURL = `https://sandsharks-org.vercel.app/password-reset/set-new-password/${encodeURIComponent(
+    token
+  )}`;
+
+  const subject = "Sandsharks password reset request";
+  const body = `<div>
+    <p>You, or someone, has requested to reset your password for sandsharks.org.</p>
+    <p>If this was you, please click the link below to reset your password:</p>
+    <a href="${resetURL}">Reset password</a>
+    <p>*This link will expire in 1 hour.</p>
+    <p>If you did not request this, please ignore this email and your password will remain unchanged.</p>
+  </div>`;
+
+  const transport = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: SMTP_EMAIL,
+      pass: SMTP_PASSWORD,
+    },
+  });
+  try {
+    const testResult = await transport.verify();
+  } catch (error) {
+    console.error("error", error);
+    return { error: "Something went wrong, please try again." };
+  }
+
+  try {
+    const sendResult = await transport.sendMail({
+      from: SMTP_EMAIL,
+      to,
+      subject,
+      html: body,
+    });
+
+    if (sendResult && sendResult.messageId) {
+      return {
+        message:
+          "If this email is registered, a link to reset your password will be sent to this email address.",
+      };
+    } else {
+      // Remove token from database if email sending failed
+      await db
+        .collection("members")
+        .updateOne(
+          { email: to },
+          { $unset: { passwordResetToken: 1, passwordResetExpires: 1 } }
+        );
+      return { error: "Failed to send reset link. Please try again." };
+    }
+  } catch (error) {
+    console.log(error);
+    return { error: "Something went wrong. Please try again." };
+  }
+}
+
+export async function setNewPassword(prevState, formData) {
+  const token = formData.get("token");
+  const password = formData.get("password");
+  const confirmPassword = formData.get("confirmPassword");
+
+  if (password !== confirmPassword) {
+    return { error: "Passwords do not match" };
+  }
+
+  const db = await dbConnection();
+  const member = await db.collection("members").findOne({
+    passwordResetToken: token,
+    passwordResetExpires: { $gt: Date.now() },
+  });
+
+  if (!member) {
+    return { error: "Password reset token is invalid or has expired" };
+  }
+
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(password, salt);
+
+  await db.collection("members").updateOne(
+    { email: member.email },
+    {
+      $set: { password: hashedPassword },
+      $unset: { passwordResetToken: 1, passwordResetExpires: 1 },
+    }
+  );
+
+  return { message: "Password reset successful" };
 }
 
 ///////////////////////////////////////////////
@@ -347,9 +444,11 @@ export const createNewPost = async (prevState, formData) => {
   const user =
     session?.resultObj?.preferredName || session?.resultObj?.firstName;
 
+  const formattedMessage = formData.get("message").replace(/\n/g, "<br />");
+
   const result = PostFormSchema.safeParse({
     title: formData.get("title"),
-    message: formData.get("message"),
+    message: formattedMessage,
     date: formData.get("date"),
     startTime: formData.get("startTime"),
     endTime: formData.get("endTime"),
@@ -367,8 +466,6 @@ export const createNewPost = async (prevState, formData) => {
   if (!result.success) {
     return { message: "Failed to create post" };
   }
-
-  console.log(result.data);
 
   const { title, message, date, startTime, endTime } = result.data;
 
@@ -548,9 +645,11 @@ export async function updatePost(prevState, formData) {
     return { message: "You must be logged in as ultrashark to update a post" };
   }
 
+  const formattedMessage = formData.get("message").replace(/\n/g, "<br />");
+
   const result = PostFormSchema.safeParse({
     title: formData.get("title"),
-    message: formData.get("message"),
+    message: formattedMessage,
     date: formData.get("date"),
     startTime: formData.get("startTime"),
     endTime: formData.get("endTime"),

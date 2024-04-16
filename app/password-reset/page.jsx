@@ -5,6 +5,7 @@ import Link from "next/link";
 
 const initialState = {
   message: "",
+  error: "",
 };
 
 function SubmitButton() {
@@ -33,16 +34,19 @@ const passwordResetPage = () => {
           required
           className="block mt-4 mb-4"
         />
-        {state?.message && (
+        {state?.message ? (
           <>
-            {" "}
             <h1 className="text-red-500 ">{state?.message} </h1>
             <h1>
               <Link href="/signin">Click here to sign in.</Link>
             </h1>
           </>
+        ) : (
+          <>
+            {state?.error && <h1 className="text-red-500 ">{state?.error} </h1>}
+            <SubmitButton />
+          </>
         )}
-        <SubmitButton />
       </form>
     </div>
   );

@@ -28,7 +28,14 @@ const Posts = async ({ posts, user }) => {
               <li>
                 <h1 className="font-bold text-2xl mb-2">{post.title}</h1>
                 <h3>Posted by: {post.postedBy}</h3>
-                <p className="overflow-auto break-words">{post.message}</p>
+                <p className="overflow-auto break-words">
+                  {post.message.split("<br />").map((line, index) => (
+                    <p key={index}>
+                      {line}
+                      <br />
+                    </p>
+                  ))}
+                </p>
                 {post.startTime && (
                   <div>
                     <div className="mt-4">
@@ -64,64 +71,71 @@ const Posts = async ({ posts, user }) => {
                   </button>
                 </form>
               )}
-              {post?.beginnerClinic &&
-              post?.beginnerClinic?.beginnerClinicOffered ? (
-                <div className="bg-blue-300 rounded-lg p-4 mt-4">
-                  <h1>Beginner Clinic:</h1>
-                  <p className="overflow-auto break-words">
-                    {post?.beginnerClinic?.beginnerClinicMessage}
-                  </p>
-                  <p className="mt-4">
-                    Start time:{" "}
-                    {convertTo12Hour(
-                      post?.beginnerClinic?.beginnerClinicStartTime
-                    )}
-                  </p>
-                  <p>
-                    End time:{" "}
-                    {convertTo12Hour(
-                      post?.beginnerClinic?.beginnerClinicEndTime
-                    )}
-                  </p>
-                  <p className="mt-4">
-                    Court number:{" "}
-                    {post?.beginnerClinic?.beginnerClinicCourts || "TBD"}
-                  </p>
-                  <div className="mt-4 mb-4">
-                    <h1>Who's going:</h1>
-                    {post?.beginnerClinic?.beginnerClinicReplies?.map(
-                      (reply) => (
-                        <p key={reply._id}>{reply?.name}</p>
-                      )
-                    )}
+              {post?.startTime &&
+                (post?.beginnerClinic &&
+                post?.beginnerClinic?.beginnerClinicOffered ? (
+                  <div className="bg-blue-300 rounded-lg p-4 mt-4">
+                    <h1>Beginner Clinic:</h1>
+                    <p className="overflow-auto break-words">
+                      {post?.beginnerClinic?.beginnerClinicMessage}
+                    </p>
+                    <p className="mt-4">
+                      Start time:{" "}
+                      {convertTo12Hour(
+                        post?.beginnerClinic?.beginnerClinicStartTime
+                      )}
+                    </p>
+                    <p>
+                      End time:{" "}
+                      {convertTo12Hour(
+                        post?.beginnerClinic?.beginnerClinicEndTime
+                      )}
+                    </p>
+                    <p className="mt-4">
+                      Court number:{" "}
+                      {post?.beginnerClinic?.beginnerClinicCourts || "TBD"}
+                    </p>
+                    <div className="mt-4 mb-4">
+                      <h1>Who's going:</h1>
+                      {post?.beginnerClinic?.beginnerClinicReplies?.map(
+                        (reply) => (
+                          <p key={reply._id}>{reply?.name}</p>
+                        )
+                      )}
+                    </div>
+                    {new Date(post.date) > new Date() &&
+                      (post?.beginnerClinic?.beginnerClinicReplies?.length >=
+                      10 ? (
+                        <p>
+                          The maximum number of participants is 10. This clinic
+                          is full, check back later to see if there's space
+                          available
+                        </p>
+                      ) : (
+                        <form
+                          action={async () => {
+                            "use server";
+                            await replyToBeginnerClinic(post._id);
+                          }}
+                        >
+                          <button type="submit" className="btn">
+                            {post?.beginnerClinic?.beginnerClinicReplies?.some(
+                              (reply) => reply.email === user?.email
+                            )
+                              ? "I can't make it anymore :("
+                              : "Yas, plz help me! D:"}
+                          </button>
+                        </form>
+                      ))}
                   </div>
-                  {new Date(post.date) > new Date() &&
-                    (post?.beginnerClinic?.beginnerClinicReplies?.length >=
-                    10 ? (
-                      <p>
-                        The maximum number of participants is 10. This clinic is
-                        full, check back later to see if there's space available
-                      </p>
-                    ) : (
-                      <form
-                        action={async () => {
-                          "use server";
-                          await replyToBeginnerClinic(post._id);
-                        }}
-                      >
-                        <button type="submit" className="btn">
-                          {post?.beginnerClinic?.beginnerClinicReplies?.some(
-                            (reply) => reply.email === user?.email
-                          )
-                            ? "I can't make it anymore :("
-                            : "Yas, plz help me! D:"}
-                        </button>
-                      </form>
-                    ))}
-                </div>
-              ) : (
-                <div>There's no beginner clinic offered on this day.</div>
-              )}
+                ) : (
+                  <div className="mt-4">
+                    <h1>
+                      *Note: There will not be a beginner clinic offered on this
+                      day.
+                    </h1>
+                  </div>
+                ))}
             </div>
           );
         })}

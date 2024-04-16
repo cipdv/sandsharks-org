@@ -8,7 +8,6 @@ const initialState = {
 };
 
 const USPostsEditable = ({ posts, user }) => {
-  console.log("posts", posts);
   function convertTo12Hour(time) {
     const [hour, minute] = time.split(":");
     return new Date(1970, 0, 1, hour, minute).toLocaleTimeString("en-US", {
@@ -50,7 +49,7 @@ const USPostsEditable = ({ posts, user }) => {
                   <label>
                     <span>Message:</span>
                     <textarea
-                      defaultValue={post.message}
+                      defaultValue={post.message.replace(/<br \/>/g, "\n")}
                       className="min-h-[200px] w-full"
                       name="message"
                     />

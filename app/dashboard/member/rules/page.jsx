@@ -17,8 +17,9 @@ const RulesPage = () => {
           . However, there are no refs to make the tough calls so we’re not too
           stingy on “doubles,” and if there is any disagreement on a call, raise
           both thumbs and ask to reserve the ball. In general, we discourage
-          receiving serves and shots with an overhead hand pass, unless the ball
-          is hit at you and there is no other way to pass the ball.
+          receiving serves and shots with an overhead hand pass (a "volley"),
+          unless the ball is hit at you and there is no other way to pass the
+          ball.
         </p>
         <br />
         <p>
