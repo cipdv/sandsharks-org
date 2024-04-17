@@ -19,7 +19,11 @@ const MembersSection = ({ members, session }) => {
                 <a href="#">
                   <Image
                     class="rounded-t-lg"
-                    src="/images/zac.webp"
+                    src={
+                      member.profilePic?.url
+                        ? member.profilePic.url
+                        : "/images/zac.webp"
+                    }
                     alt="profile photo"
                     width={100}
                     height={100}

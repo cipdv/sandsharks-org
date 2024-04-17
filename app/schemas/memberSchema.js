@@ -21,12 +21,6 @@ export const MemberSchema = z.object({
     }),
   about: z.string().optional(),
   profilePublic: z.boolean(),
-  // profilePic: z
-  //   .object({
-  //     picApproved: z.boolean().default(false),
-  //     image: z.string(),
-  //   })
-  //   .optional(),
 });
 
 export const MemberUpdateFormSchema = z.object({

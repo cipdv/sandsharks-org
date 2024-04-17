@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import { updateMemberProfile } from "@/app/actions";
+import Image from "next/image";
 
 const initialState = {
+  message: "",
   firstName: "",
   preferredName: "",
   lastName: "",
@@ -29,6 +31,25 @@ const MemberProfile = ({ user }) => {
     setAboutCount(event.target.value.length);
   };
   const [state, formAction] = useFormState(updateMemberProfile, initialState);
+
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  useEffect(() => {
+    if (user?.profilePic?.url) {
+      setSelectedImage(user.profilePic.url);
+    }
+  }, [user]);
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setSelectedImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   return (
     <form
@@ -122,7 +143,12 @@ const MemberProfile = ({ user }) => {
                         </p> */}
         </div>
         <div className="flex flex-col gap-3 glassmorphism mt-4 w-full lg:w-1/2">
-          <label htmlFor="aboutMe">About Me</label>
+          <div className="flex items-center justify-between">
+            <label htmlFor="aboutMe" className="mr-2">
+              About Me
+            </label>
+            <p className="text-sm">{500 - aboutCount} characters remaining</p>
+          </div>
           <textarea
             id="about"
             name="about"
@@ -134,14 +160,26 @@ const MemberProfile = ({ user }) => {
             onChange={handleAboutChange}
             className="p-2"
           />
-          <p>{500 - aboutCount} characters remaining</p>
           <div>
-            <label htmlFor="profilePic">Profile Picture</label>
+            <label htmlFor="profilePic" className="block">
+              Profile Picture
+            </label>
+            {selectedImage && (
+              <Image
+                className="mt-4 rounded-md"
+                src={selectedImage}
+                alt="Selected"
+                width={150}
+                height={150}
+              />
+            )}
             <input
               type="file"
               id="profilePic"
               name="profilePic"
               accept="image/*"
+              onChange={handleImageChange}
+              className="block mt-4"
             />
           </div>
         </div>

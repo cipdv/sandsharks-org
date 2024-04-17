@@ -11,6 +11,8 @@ import { cookies } from "next/headers";
 import { getSession, encrypt } from "@/app/lib/auth";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
+import { Storage } from "@google-cloud/storage";
+import path from "path";
 //zod schemas
 import {
   MemberSchema,
@@ -185,6 +187,16 @@ export async function updateMemberProfile(prevState, formData) {
   const formDataObj = Object.fromEntries(formData.entries());
   formDataObj.emailNotifications = formDataObj.emailNotifications === "on";
   formDataObj.profilePublic = formDataObj.profilePublic === "on";
+  // Normalize the email address
+  formDataObj.email = formDataObj.email.toLowerCase().trim();
+
+  // Capitalize the first letter of the first name and preferred name
+  formDataObj.firstName =
+    formDataObj.firstName.charAt(0).toUpperCase() +
+    formDataObj.firstName.slice(1);
+  formDataObj.preferredName =
+    formDataObj.preferredName.charAt(0).toUpperCase() +
+    formDataObj.preferredName.slice(1);
 
   const result = MemberUpdateFormSchema.safeParse(formDataObj);
 
@@ -207,6 +219,41 @@ export async function updateMemberProfile(prevState, formData) {
     profilePublic,
   } = result.data;
 
+  //upload profile pic to google cloud storage
+  const { profilePic } = formDataObj;
+  let profilePicUrl;
+
+  if (profilePic) {
+    const storage = new Storage({
+      projectId: process.env.GCLOUD_PROJECT_ID,
+      credentials: {
+        client_email: process.env.GCLOUD_CLIENT_EMAIL,
+        private_key: process.env.GCLOUD_PRIVATE_KEY.replace(/\\n/g, "\n"),
+      },
+    });
+
+    const buffer = await profilePic.arrayBuffer();
+
+    if (buffer.byteLength > 2000000) {
+      // limit file size to 1MB
+      return { message: "Profile picture must be less than 2MB" };
+    }
+
+    const bucket = storage.bucket("sandsharks");
+    const extension = path.extname(profilePic?.name);
+    const fileName = `${_id}${extension}`;
+    const file = bucket.file(fileName);
+    await file.save(Buffer.from(buffer), { contentType: profilePic.mimetype }); // Generate a signed URL for the file that is publicly accessible for 7 days
+    const [url] = await file.getSignedUrl({
+      version: "v4",
+      action: "read",
+      expires: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    // The URL is the public URL of the file
+    profilePicUrl = url;
+  }
+
   const dbClient = await dbConnection;
   const db = await dbClient.db("Sandsharks");
 
@@ -218,6 +265,7 @@ export async function updateMemberProfile(prevState, formData) {
     return { message: "Member not found" };
   }
 
+  // Update the member with the profile picture URL and other fields
   await db.collection("members").updateOne(
     { _id: new ObjectId(_id) },
     {
@@ -230,6 +278,10 @@ export async function updateMemberProfile(prevState, formData) {
         emailNotifications,
         about,
         profilePublic,
+        profilePic: {
+          approved: false,
+          url: profilePicUrl,
+        },
       },
     }
   );
@@ -532,7 +584,7 @@ export const getAllPosts = async () => {
       .collection("posts")
       .find()
       .sort({ createdAt: -1 })
-      .limit(10)
+      .limit(5)
       .toArray();
     return posts;
   } catch (error) {

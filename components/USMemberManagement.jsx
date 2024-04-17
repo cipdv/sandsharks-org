@@ -16,7 +16,9 @@ const USMembersManagement = ({ members }) => {
               <div className="flex items-center">
                 <Image
                   src={
-                    member?.profilePic ? member.profilePic : "/images/zac.webp"
+                    member?.profilePic?.url
+                      ? member.profilePic?.url
+                      : "/images/zac.webp"
                   }
                   alt={member?.preferredName || member?.firstName}
                   width={100}
