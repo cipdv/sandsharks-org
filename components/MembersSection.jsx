@@ -5,7 +5,7 @@ const MembersSection = ({ members, session }) => {
   if (session.resultObj.memberType === "member") {
     return (
       <div className="mx-auto text-center">
-        <h1>Members</h1>
+        <h1>Members:</h1>
         <ul className="flex flex-wrap space-x-4 space-y-4 flex-col sm:flex-row justify-center">
           {members
             .filter(
