@@ -23,6 +23,7 @@ function SubmitButton() {
 }
 
 const MemberProfile = ({ user }) => {
+  console.log(user);
   const [aboutCount, setAboutCount] = useState(
     user?.about ? user.about.length : 0
   );
@@ -36,7 +37,7 @@ const MemberProfile = ({ user }) => {
 
   useEffect(() => {
     if (user?.profilePic?.url) {
-      setSelectedImage(user.profilePic.url);
+      setSelectedImage(user?.profilePic?.url);
     }
   }, [user]);
 

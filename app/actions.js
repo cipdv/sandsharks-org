@@ -243,16 +243,20 @@ export async function updateMemberProfile(prevState, formData) {
     const extension = path.extname(profilePic?.name);
     const fileName = `${_id}${extension}`;
     const file = bucket.file(fileName);
-    await file.save(Buffer.from(buffer), { contentType: profilePic.mimetype }); // Generate a signed URL for the file that is publicly accessible for 7 days
-    const [url] = await file.getSignedUrl({
-      version: "v4",
-      action: "read",
-      expires: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7 days
-    });
+    await file.save(Buffer.from(buffer), { contentType: profilePic.mimetype });
+
+    // Make the file publicly accessible
+    // await file.makePublic();
+
+    // Get the public URL for the file
+    const url = `https://storage.googleapis.com/${bucket.name}/${file.name}`;
+    //storage.cloud.google.com/sandsharks/66153eb23e46d9d664d30983.jpg
 
     // The URL is the public URL of the file
-    profilePicUrl = url;
+    https: profilePicUrl = url;
   }
+
+  console.log("profilePicUrl", profilePicUrl);
 
   const dbClient = await dbConnection;
   const db = await dbClient.db("Sandsharks");
