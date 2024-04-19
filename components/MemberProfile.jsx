@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useFormState, useFormStatus } from "react-dom";
-import { updateMemberProfile } from "@/app/actions";
+import { updateMemberProfile } from "@/app/_actions";
 import Image from "next/image";
 
 const initialState = {

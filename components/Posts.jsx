@@ -1,4 +1,4 @@
-import { replyToPost, replyToBeginnerClinic } from "@/app/actions";
+import { replyToPost, replyToBeginnerClinic } from "@/app/_actions";
 
 const Posts = async ({ posts, user }) => {
   function convertTo12Hour(time) {
@@ -25,7 +25,7 @@ const Posts = async ({ posts, user }) => {
 
           return (
             <div className="bg-blue-100 p-4 rounded-md mt-4" key={post._id}>
-              <li>
+              <li key={post._id} className="bg-blue-100 p-4 rounded-md mt-4">
                 <h1 className="font-bold text-2xl mb-2">{post.title}</h1>
                 <h3>Posted by: {post.postedBy}</h3>
                 <p className="overflow-auto break-words">

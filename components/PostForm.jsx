@@ -1,6 +1,6 @@
 "use client";
 
-import { createNewPost } from "@/app/actions";
+import { createNewPost } from "@/app/_actions";
 import { useFormState, useFormStatus } from "react-dom";
 
 const initialState = {

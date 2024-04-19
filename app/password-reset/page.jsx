@@ -1,6 +1,6 @@
 "use client";
 import { useFormState, useFormStatus } from "react-dom";
-import { sendPasswordReset } from "@/app/actions";
+import { sendPasswordReset } from "@/app/_actions";
 import Link from "next/link";
 
 const initialState = {

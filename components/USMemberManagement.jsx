@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { deactivateMemberProfile, deleteMemberProfile } from "@/app/actions";
+import { deactivateMemberProfile, deleteMemberProfile } from "@/app/_actions";
 
 const USMembersManagement = ({ members }) => {
   return (

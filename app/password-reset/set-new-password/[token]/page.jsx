@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
-import { setNewPassword } from "@/app/actions";
+import { setNewPassword } from "@/app/_actions";
 import Link from "next/link";
 
 const initialState = {

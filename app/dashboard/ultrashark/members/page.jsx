@@ -1,4 +1,4 @@
-import { getAllMembers } from "@/app/actions";
+import { getAllMembers } from "@/app/_actions";
 import USMemberManagement from "@/components/USMemberManagement";
 import USPendingMembers from "@/components/USPendingMembers";
 

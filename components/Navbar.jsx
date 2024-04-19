@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getSession, logout } from "@/app/lib/auth";
 import { redirect } from "next/navigation";
-import { getCurrentUser } from "@/app/actions";
+import { getCurrentUser } from "@/app/_actions";
 
 const Navbar = async () => {
   const currentUser = await getCurrentUser();

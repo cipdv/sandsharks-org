@@ -1,5 +1,5 @@
 import MembersSection from "@/components/MembersSection";
-import { getAllMembers } from "@/app/actions";
+import { getAllMembers } from "@/app/_actions";
 import { getSession } from "@/app/lib/auth";
 import Link from "next/link";
 

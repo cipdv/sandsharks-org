@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { registerNewMember } from "@/app/actions";
+import { registerNewMember } from "@/app/_actions";
 import { useFormState, useFormStatus } from "react-dom";
 
 const initialState = {

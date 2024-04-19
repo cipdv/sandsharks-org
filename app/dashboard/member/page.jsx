@@ -1,5 +1,5 @@
 import { getSession } from "@/app/lib/auth";
-import { getAllPosts, getCurrentUser, getWaivers } from "@/app/actions";
+import { getAllPosts, getCurrentUser, getWaivers } from "@/app/_actions";
 //components
 import Waiver from "@/components/Waiver";
 import MemberDashboard from "@/components/MemberDashboard";

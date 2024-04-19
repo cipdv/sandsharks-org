@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { approveMemberProfile, deleteMemberProfile } from "@/app/actions";
+import { approveMemberProfile, deleteMemberProfile } from "@/app/_actions";
 
 const USPendingMembers = ({ members }) => {
   return (

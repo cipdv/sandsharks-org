@@ -221,7 +221,7 @@ export async function updateMemberProfile(prevState, formData) {
 
   //upload profile pic to google cloud storage
   const { profilePic } = formDataObj;
-  let profilePicUrl;
+  let url;
 
   if (profilePic) {
     const storage = new Storage({
@@ -241,22 +241,22 @@ export async function updateMemberProfile(prevState, formData) {
 
     const bucket = storage.bucket("sandsharks");
     const extension = path.extname(profilePic?.name);
-    const fileName = `${_id}${extension}`;
+    const fileName = `${_id}-${Date.now()}${extension}`; // Generate a unique file name
     const file = bucket.file(fileName);
-    await file.save(Buffer.from(buffer), { contentType: profilePic.mimetype });
 
+    // Upload the new file
+    await file.save(Buffer.from(buffer), {
+      contentType: profilePic.mimetype,
+      metadata: {
+        cacheControl: "no-cache",
+      },
+    });
     // Make the file publicly accessible
     // await file.makePublic();
 
     // Get the public URL for the file
-    const url = `https://storage.googleapis.com/${bucket.name}/${file.name}`;
-    //storage.cloud.google.com/sandsharks/66153eb23e46d9d664d30983.jpg
-
-    // The URL is the public URL of the file
-    https: profilePicUrl = url;
+    url = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
   }
-
-  console.log("profilePicUrl", profilePicUrl);
 
   const dbClient = await dbConnection;
   const db = await dbClient.db("Sandsharks");
@@ -282,10 +282,7 @@ export async function updateMemberProfile(prevState, formData) {
         emailNotifications,
         about,
         profilePublic,
-        profilePic: {
-          approved: false,
-          url: profilePicUrl,
-        },
+        profilePic: url ? { approved: false, url: url } : undefined,
       },
     }
   );
