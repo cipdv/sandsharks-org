@@ -179,7 +179,7 @@ export async function registerNewMember(prevState, formData) {
 export async function updateMemberProfile(prevState, formData) {
   const session = await getSession();
   if (!session) {
-    return { message: "You must be logged in to update your profile" };
+    return { message: "You must be logged in to update your profile." };
   }
 
   const { _id } = session.resultObj;
