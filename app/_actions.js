@@ -223,19 +223,16 @@ export async function updateMemberProfile(prevState, formData) {
   const { profilePic } = formDataObj;
   let url;
 
+  const { privateKey } = JSON.parse(process.env.GCLOUD_PRIVATE_KEY);
+
   if (profilePic) {
     const storage = new Storage({
       projectId: process.env.GCLOUD_PROJECT_ID,
       credentials: {
         client_email: process.env.GCLOUD_CLIENT_EMAIL,
-        private_key: process.env.GCLOUD_PRIVATE_KEY,
+        private_key: privateKey.replace(/\\n/g, "\n"),
       },
     });
-
-    if (!private_key) {
-      throw new Error("Private key is not defined");
-    }
-    console.log("private key", private_key);
 
     const buffer = await profilePic.arrayBuffer();
 
