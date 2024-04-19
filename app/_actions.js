@@ -232,6 +232,8 @@ export async function updateMemberProfile(prevState, formData) {
       },
     });
 
+    console.log("private key", private_key);
+
     const buffer = await profilePic.arrayBuffer();
 
     if (buffer.byteLength > 2000000) {
