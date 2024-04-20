@@ -204,7 +204,7 @@ export async function updateMemberProfile(prevState, formData) {
     console.log("failed");
     return {
       message:
-        "Failed to update profile: make sure all required fields are completed and try again",
+        "Failed to update profile: make sure all required fields are completed and try again.",
     };
   }
 
