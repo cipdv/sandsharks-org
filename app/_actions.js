@@ -223,25 +223,33 @@ export async function updateMemberProfile(prevState, formData) {
   const { profilePic } = formDataObj;
   let url;
 
-  const { privateKey } = JSON.parse(process.env.GCLOUD_PRIVATE_KEY);
-
   if (profilePic) {
+    // const storage = new Storage({
+    //   projectId: process.env.GCLOUD_PROJECT_ID,
+    //   credentials: {
+    //     client_email: process.env.GCLOUD_CLIENT_EMAIL,
+    //     private_key: process.env.GCLOUD_PRIVATE_KEY.replace(/\\n/g, "\n"),
+    //   },
+    // });
     const storage = new Storage({
       projectId: process.env.GCLOUD_PROJECT_ID,
       credentials: {
+        type: "service_account",
+        private_key: process.env.GCLOUD_PRIVATE_KEY,
         client_email: process.env.GCLOUD_CLIENT_EMAIL,
-        private_key: privateKey.replace(/\\n/g, "\n"),
+        client_id: process.env.GCLOUD_CLIENT_ID,
+        universe_domain: process.env.GCLOUD_UNIVERSE_DOMAIN,
       },
     });
 
     const buffer = await profilePic.arrayBuffer();
 
     if (buffer.byteLength > 2000000) {
-      // limit file size to 1MB
+      // limit file size to 2MB
       return { message: "Profile picture must be less than 2MB" };
     }
 
-    const bucket = storage.bucket("sandsharks");
+    const bucket = storage.bucket(process.env.GCLOUD_BUCKET_NAME);
     const extension = path.extname(profilePic?.name);
     const fileName = `${_id}-${Date.now()}${extension}`; // Generate a unique file name
     const file = bucket.file(fileName);
