@@ -176,6 +176,8 @@ export async function registerNewMember(prevState, formData) {
   redirect("/");
 }
 
+import fs from "fs";
+
 export async function updateMemberProfile(prevState, formData) {
   const session = await getSession();
   if (!session) {
@@ -231,14 +233,17 @@ export async function updateMemberProfile(prevState, formData) {
     //     private_key: process.env.GCLOUD_PRIVATE_KEY.replace(/\\n/g, "\n"),
     //   },
     // });
+
+    // const privateKey = fs.readFileSync("sandsharks-gcs.json").toString();
+    // const base64PrivateKey = Buffer.from(privateKey).toString("base64");
+
+    // console.log(base64PrivateKey);
+
     const storage = new Storage({
       projectId: process.env.GCLOUD_PROJECT_ID,
       credentials: {
-        type: "service_account",
         private_key: process.env.GCLOUD_PRIVATE_KEY,
         client_email: process.env.GCLOUD_CLIENT_EMAIL,
-        client_id: process.env.GCLOUD_CLIENT_ID,
-        universe_domain: process.env.GCLOUD_UNIVERSE_DOMAIN,
       },
     });
 
