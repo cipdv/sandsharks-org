@@ -202,6 +202,8 @@ export async function updateMemberProfile(prevState, formData) {
 
   const result = MemberUpdateFormSchema.safeParse(formDataObj);
 
+  console.log("result", result);
+
   if (!result.success) {
     console.log("failed");
     return {
@@ -239,16 +241,22 @@ export async function updateMemberProfile(prevState, formData) {
 
     // console.log(base64PrivateKey);
 
+    // const base64PrivateKey = process.env.GCLOUD_PRIVATE_KEY;
+    // const privateKey = Buffer.from(base64PrivateKey, "base64").toString("utf8");
+
+    // console.log(privateKey);
+
     const storage = new Storage({
       projectId: process.env.GCLOUD_PROJECT_ID,
       credentials: {
         private_key: process.env.GCLOUD_PRIVATE_KEY,
         client_email: process.env.GCLOUD_CLIENT_EMAIL,
+        client_id: process.env.GCLOUD_CLIENT_ID,
+        universe_domain: process.env.GCLOUD_UNIVERSE_DOMAIN,
       },
     });
 
     const buffer = await profilePic.arrayBuffer();
-
     if (buffer.byteLength > 2000000) {
       // limit file size to 2MB
       return { message: "Profile picture must be less than 2MB" };
