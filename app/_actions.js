@@ -13,6 +13,8 @@ import nodemailer from "nodemailer";
 import crypto from "crypto";
 import { Storage } from "@google-cloud/storage";
 import path from "path";
+import { v2 as cloudinary } from "cloudinary";
+
 //zod schemas
 import {
   MemberSchema,
@@ -176,8 +178,6 @@ export async function registerNewMember(prevState, formData) {
   redirect("/");
 }
 
-import fs from "fs";
-
 export async function updateMemberProfile(prevState, formData) {
   const session = await getSession();
   if (!session) {
@@ -224,61 +224,43 @@ export async function updateMemberProfile(prevState, formData) {
   } = result.data;
 
   //upload profile pic to google cloud storage
+
   const { profilePic } = formDataObj;
+
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+  });
+
   let url;
 
   if (profilePic) {
-    // const storage = new Storage({
-    //   projectId: process.env.GCLOUD_PROJECT_ID,
-    //   credentials: {
-    //     client_email: process.env.GCLOUD_CLIENT_EMAIL,
-    //     private_key: process.env.GCLOUD_PRIVATE_KEY.replace(/\\n/g, "\n"),
-    //   },
-    // });
-
-    // const privateKey = fs.readFileSync("sandsharks-gcs.json").toString();
-    // const base64PrivateKey = Buffer.from(privateKey).toString("base64");
-
-    // console.log(base64PrivateKey);
-
-    // const base64PrivateKey = process.env.GCLOUD_PRIVATE_KEY;
-    // const privateKey = Buffer.from(base64PrivateKey, "base64").toString("utf8");
-
-    // console.log(privateKey);
-
-    const storage = new Storage({
-      projectId: process.env.GCLOUD_PROJECT_ID,
-      credentials: {
-        private_key: process.env.GCLOUD_PRIVATE_KEY,
-        client_email: process.env.GCLOUD_CLIENT_EMAIL,
-        client_id: process.env.GCLOUD_CLIENT_ID,
-        universe_domain: process.env.GCLOUD_UNIVERSE_DOMAIN,
-      },
-    });
-
     const buffer = await profilePic.arrayBuffer();
     if (buffer.byteLength > 2000000) {
       // limit file size to 2MB
       return { message: "Profile picture must be less than 2MB" };
     }
 
-    const bucket = storage.bucket(process.env.GCLOUD_BUCKET_NAME);
-    const extension = path.extname(profilePic?.name);
-    const fileName = `${_id}-${Date.now()}${extension}`; // Generate a unique file name
-    const file = bucket.file(fileName);
+    // Convert ArrayBuffer to data URL
+    const base64 = Buffer.from(buffer).toString("base64");
+    const dataUrl = `data:image/jpeg;base64,${base64}`;
 
-    // Upload the new file
-    await file.save(Buffer.from(buffer), {
-      contentType: profilePic.mimetype,
-      metadata: {
-        cacheControl: "no-cache",
-      },
+    const result = await new Promise((resolve, reject) => {
+      cloudinary.uploader.upload(
+        dataUrl,
+        { public_id: `${_id}-${Date.now()}`, resource_type: "auto" },
+        function (error, result) {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(result);
+          }
+        }
+      );
     });
-    // Make the file publicly accessible
-    // await file.makePublic();
 
-    // Get the public URL for the file
-    url = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
+    url = result.secure_url;
   }
 
   const dbClient = await dbConnection;
