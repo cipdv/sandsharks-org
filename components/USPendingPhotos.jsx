@@ -1,15 +1,15 @@
 import Image from "next/image";
-import { approveMemberProfile, deleteMemberProfile } from "@/app/_actions";
+import { approveMemberPhoto, disapproveMemberPhoto } from "@/app/_actions";
 
 const USPendingMembers = ({ members }) => {
   return (
     <div>
-      <h1 className="font-bold text-2xl">Pending Members</h1>
+      <h1 className="font-bold text-2xl mt-4">Pending Photos</h1>
       <div className="bg-blue-100 p-4 rounded-md mt-4 overflow-x-auto">
-        {members.filter((member) => member.memberType === "pending").length >
-        0 ? (
+        {members.filter((member) => member?.profilePic?.status === "pending")
+          .length > 0 ? (
           members
-            .filter((member) => member.memberType === "pending")
+            .filter((member) => member?.profilePic?.status === "pending")
             .map((member) => (
               <div
                 key={member.id}
@@ -17,14 +17,10 @@ const USPendingMembers = ({ members }) => {
               >
                 <div className="flex items-center">
                   <Image
-                    src={
-                      member?.profilePic?.url
-                        ? member.profilePic?.url
-                        : "/images/zac.webp"
-                    }
+                    src={member?.profilePic?.url || "/images/zac.webp"}
                     alt={member?.preferredName || member?.firstName}
-                    width={100}
-                    height={100}
+                    width={400}
+                    height={400}
                     className="rounded"
                   />
                   <div className="ml-4">
@@ -40,7 +36,7 @@ const USPendingMembers = ({ members }) => {
                   <form
                     action={async () => {
                       "use server";
-                      await approveMemberProfile(member._id);
+                      await approveMemberPhoto(member._id);
                     }}
                     className="mb-2"
                   >
@@ -51,21 +47,21 @@ const USPendingMembers = ({ members }) => {
                   <form
                     action={async () => {
                       "use server";
-                      await deleteMemberProfile(member._id);
+                      await disapproveMemberPhoto(member._id);
                     }}
                   >
                     <button
                       className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
                       type="submit"
                     >
-                      Delete
+                      Disapprove
                     </button>
                   </form>
                 </div>
               </div>
             ))
         ) : (
-          <h1>There are no pending members at this time</h1>
+          <h1>There are no photos pending approval at this time</h1>
         )}
       </div>
     </div>

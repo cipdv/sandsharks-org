@@ -10,7 +10,7 @@ const MembersPage = async () => {
   return (
     <div>
       <MembersSection members={members} session={session} />
-      <div className="mt-8">
+      <div className="mt-8 flex items-center justify-center">
         <Link href="/dashboard/member">
           <button className="btn">Return to dashboard</button>
         </Link>

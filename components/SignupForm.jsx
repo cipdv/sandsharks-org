@@ -7,14 +7,11 @@ import { useFormState, useFormStatus } from "react-dom";
 const initialState = {
   message: "",
   firstName: "",
-  preferredName: "",
   lastName: "",
   email: "",
   pronouns: "",
   password: "",
   confirmPassword: "",
-  emailNotifications: undefined,
-  profilePublic: undefined,
 };
 
 function SubmitButton() {
@@ -52,22 +49,15 @@ const SignupForm = () => {
           type="text"
           id="firstName"
           name="firstName"
-          placeholder="Your legal first name"
+          placeholder="The name you go by - will be visible on the website"
           required
-        />
-        <label htmlFor="preferredName">Preferred Name</label>
-        <input
-          type="text"
-          id="preferredName"
-          name="preferredName"
-          placeholder="The name you'd like to be called"
         />
         <label htmlFor="lastName">Last Name</label>
         <input
           type="text"
           id="lastName"
           name="lastName"
-          placeholder="Your legal last name"
+          placeholder="Last name"
           required
         />
         <label htmlFor="pronouns">Pronouns</label>
@@ -80,13 +70,6 @@ const SignupForm = () => {
           <option value="he/him">He/him</option>
           <option value="other">Other</option>
         </select>
-        <div className="flex items-center">
-          <input type="checkbox" name="profilePublic" />
-          <label className="ml-2">
-            Check here if you are comfortable with your preferred name and
-            pronouns being visible in our members section
-          </label>
-        </div>
         <h1>Login information</h1>
         <label htmlFor="email">Email</label>
         <input
@@ -99,13 +82,6 @@ const SignupForm = () => {
         {state?.email && (
           <p className="text-red-500 text-lg text-bold">{state?.email}</p>
         )}
-        <div className="flex items-center">
-          <input type="checkbox" name="emailNotifications" />
-          <label className="ml-2">
-            Check here if you want to receive email notifications when updates
-            are posted
-          </label>
-        </div>
         <label htmlFor="password">Password</label>
         <div className="flex items-center mb-4">
           <input

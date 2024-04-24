@@ -42,8 +42,6 @@ export const getCurrentUser = async () => {
 export async function registerNewMember(prevState, formData) {
   // Convert the form data to an object
   const formDataObj = Object.fromEntries(formData.entries());
-  formDataObj.emailNotifications = formDataObj.emailNotifications === "on";
-  formDataObj.profilePublic = formDataObj.profilePublic === "on";
 
   // Normalize the email address
   formDataObj.email = formDataObj.email.toLowerCase().trim();
@@ -52,9 +50,6 @@ export async function registerNewMember(prevState, formData) {
   formDataObj.firstName =
     formDataObj.firstName.charAt(0).toUpperCase() +
     formDataObj.firstName.slice(1);
-  formDataObj.preferredName =
-    formDataObj.preferredName.charAt(0).toUpperCase() +
-    formDataObj.preferredName.slice(1);
 
   // Validate the form data
   const result = MemberSchema.safeParse(formDataObj);
@@ -107,17 +102,8 @@ export async function registerNewMember(prevState, formData) {
     }
   }
 
-  const {
-    firstName,
-    lastName,
-    preferredName,
-    pronouns,
-    email,
-    emailNotifications,
-    password,
-    confirmPassword,
-    profilePublic,
-  } = result.data;
+  const { firstName, lastName, pronouns, email, password, confirmPassword } =
+    result.data;
 
   //check if passwords match
   if (password !== confirmPassword) {
@@ -145,14 +131,11 @@ export async function registerNewMember(prevState, formData) {
     const newMember = {
       firstName,
       lastName,
-      preferredName,
       pronouns,
       email,
-      emailNotifications,
       memberType: "pending",
       password: hashedPassword,
       createdAt: new Date(),
-      profilePublic,
     };
 
     await db.collection("members").insertOne(newMember);
@@ -187,8 +170,8 @@ export async function updateMemberProfile(prevState, formData) {
   const { _id } = session.resultObj;
 
   const formDataObj = Object.fromEntries(formData.entries());
-  formDataObj.emailNotifications = formDataObj.emailNotifications === "on";
-  formDataObj.profilePublic = formDataObj.profilePublic === "on";
+  console.log("formDataObj", formDataObj);
+
   // Normalize the email address
   formDataObj.email = formDataObj.email.toLowerCase().trim();
 
@@ -196,32 +179,25 @@ export async function updateMemberProfile(prevState, formData) {
   formDataObj.firstName =
     formDataObj.firstName.charAt(0).toUpperCase() +
     formDataObj.firstName.slice(1);
-  formDataObj.preferredName =
-    formDataObj.preferredName.charAt(0).toUpperCase() +
-    formDataObj.preferredName.slice(1);
 
   const result = MemberUpdateFormSchema.safeParse(formDataObj);
 
-  console.log("result", result);
-
   if (!result.success) {
-    console.log("failed");
-    return {
-      message:
-        "Failed to update profile: make sure all required fields are completed and try again.",
-    };
+    let message =
+      "Failed to update profile: make sure all required fields are completed and try again.";
+
+    const profilePicError = result.error.errors.find(
+      (error) => error.path[0] === "profilePic" && error.code === "custom"
+    );
+
+    if (profilePicError) {
+      message = profilePicError.message;
+    }
+
+    return { message };
   }
 
-  const {
-    firstName,
-    lastName,
-    preferredName,
-    pronouns,
-    email,
-    emailNotifications,
-    about,
-    profilePublic,
-  } = result.data;
+  const { firstName, lastName, pronouns, email, about } = result.data;
 
   //upload profile pic to google cloud storage
 
@@ -281,13 +257,10 @@ export async function updateMemberProfile(prevState, formData) {
       $set: {
         firstName,
         lastName,
-        preferredName,
         pronouns,
         email,
-        emailNotifications,
         about,
-        profilePublic,
-        profilePic: url ? { approved: false, url: url } : undefined,
+        profilePic: url ? { status: "pending", url: url } : undefined,
       },
     }
   );
@@ -357,6 +330,52 @@ export async function deleteMemberProfile(memberId) {
 
     revalidatePath("/dashboard/ultrashark/members");
     return { message: "Member deleted" };
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function approveMemberPhoto(memberId) {
+  const session = await getSession();
+  if (session?.resultObj?.memberType !== "ultrashark") {
+    return { message: "You must be logged in to approve a photo" };
+  }
+
+  try {
+    const dbClient = await dbConnection;
+    const db = await dbClient.db("Sandsharks");
+    await db
+      .collection("members")
+      .updateOne(
+        { _id: new ObjectId(memberId) },
+        { $set: { "profilePic.status": "approved" } }
+      );
+
+    revalidatePath("/dashboard/ultrashark/members");
+    return { message: "Photo approved" };
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function disapproveMemberPhoto(memberId) {
+  const session = await getSession();
+  if (session?.resultObj?.memberType !== "ultrashark") {
+    return { message: "You must be logged in to disapprove a photo" };
+  }
+
+  try {
+    const dbClient = await dbConnection;
+    const db = await dbClient.db("Sandsharks");
+    await db
+      .collection("members")
+      .updateOne(
+        { _id: new ObjectId(memberId) },
+        { $set: { "profilePic.status": "disapproved" } }
+      );
+
+    revalidatePath("/dashboard/ultrashark/members");
+    return { message: "Photo disapproved" };
   } catch (error) {
     console.error(error);
   }
@@ -508,8 +527,7 @@ export const createNewPost = async (prevState, formData) => {
   ) {
     return { message: "You must be logged in a supershark to create a post" };
   }
-  const user =
-    session?.resultObj?.preferredName || session?.resultObj?.firstName;
+  const user = session?.resultObj?.firstName;
 
   const formattedMessage = formData.get("message").replace(/\n/g, "<br />");
 
@@ -605,7 +623,7 @@ export async function replyToPost(postId) {
   }
 
   const member = await getCurrentUser();
-  const { email, firstName, lastName, preferredName, _id } = member;
+  const { email, firstName, lastName, _id } = member;
 
   try {
     const dbClient = await dbConnection;
@@ -635,7 +653,7 @@ export async function replyToPost(postId) {
         {
           $push: {
             replies: {
-              name: preferredName || firstName,
+              name: firstName,
               email,
               userId: _id.toString(),
               createdAt: new Date(),

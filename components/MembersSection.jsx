@@ -20,6 +20,7 @@ const MembersSection = ({ members, session }) => {
                   <Image
                     class="rounded-t-lg"
                     src={
+                      member.profilePic?.status === "approved" &&
                       member.profilePic?.url
                         ? member.profilePic.url
                         : "/images/zac.webp"
@@ -32,7 +33,7 @@ const MembersSection = ({ members, session }) => {
                 <div class="p-5">
                   <a href="#">
                     <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                      {member?.preferredName || member?.firstName}
+                      {member?.firstName}
                     </h5>
                   </a>
                   <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
@@ -73,11 +74,6 @@ const MembersSection = ({ members, session }) => {
           this section.
         </h1>
         <h1 className="text-2xl text-red-500">Check back later :)</h1>
-        <div className="mt-4">
-          <Link href="/dashboard/member">
-            <button className="btn">Return to dashboard</button>
-          </Link>
-        </div>
       </div>
     );
   }
