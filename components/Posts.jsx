@@ -1,4 +1,5 @@
 import { replyToPost, replyToBeginnerClinic } from "@/app/_actions";
+import Image from "next/image";
 
 const Posts = async ({ posts, user }) => {
   function convertTo12Hour(time) {
@@ -50,9 +51,22 @@ const Posts = async ({ posts, user }) => {
                     </div>
                     <div className="mt-4 mb-4">
                       <h1>Who's going:</h1>
-                      {post.replies.map((reply) => (
-                        <p key={reply._id}>{reply?.name}</p>
-                      ))}
+                      <div className="flex mt-2">
+                        {post.replies.map((reply) => (
+                          <div key={reply._id} className="relative mr-1 group">
+                            <Image
+                              src={reply?.pic || "/images/zac.webp"}
+                              alt={reply?.name}
+                              width={60}
+                              height={60}
+                              className="rounded-full"
+                            />
+                            <div className="absolute bottom-0 left-0 bg-black text-white text-xs p-1 opacity-0 group-hover:opacity-100">
+                              {reply?.name}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 )}

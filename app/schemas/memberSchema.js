@@ -21,14 +21,30 @@ export const MemberSchema = z.object({
   about: z.string().optional(),
 });
 
-const fileSchema = z.object({
-  size: z.number(),
-  type: z.string().refine((type) => type.startsWith("image/"), {
-    message: "File must be an image",
+const emptyFileSchema = z.object({
+  size: z.number().refine((size) => size === 0, {
+    message: "File size must be 0",
   }),
-  name: z.string(),
+  type: z.string().refine((type) => type === "application/octet-stream", {
+    message: "File type must be 'application/octet-stream'",
+  }),
+  name: z.string().refine((name) => name === "undefined", {
+    message: "File name must be 'undefined'",
+  }),
   lastModified: z.number(),
 });
+
+const fileSchema = z
+  .object({
+    size: z.number(),
+    type: z.string().refine((type) => type.startsWith("image/"), {
+      message: "File must be an image",
+    }),
+    name: z.string(),
+    lastModified: z.number(),
+  })
+  .or(emptyFileSchema)
+  .optional();
 
 export const MemberUpdateFormSchema = z.object({
   email: z.string().email().min(1, "Email is required"),

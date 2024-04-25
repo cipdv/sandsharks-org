@@ -140,14 +140,14 @@ const MemberProfile = ({ user }) => {
               />
             )}
 
-            {user.profilePic.status === "disapproved" && (
+            {user?.profilePic?.status === "disapproved" && (
               <h1>
                 Your profile photo was disapproved, please read our photo
                 guidelines and submit a new photo.
               </h1>
             )}
 
-            {user.profilePic.status === "pending" && (
+            {user?.profilePic?.status === "pending" && (
               <h1>Your profile photo is pending approval.</h1>
             )}
 

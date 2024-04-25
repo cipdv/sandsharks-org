@@ -201,17 +201,24 @@ export async function updateMemberProfile(prevState, formData) {
 
   //upload profile pic to google cloud storage
 
-  const { profilePic } = formDataObj;
+  let { profilePic } = formDataObj;
 
-  cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-  });
+  const dbClient = await dbConnection;
+  const db = await dbClient.db("Sandsharks");
+
+  const member = await db
+    .collection("members")
+    .findOne({ _id: new ObjectId(_id) });
+
+  if (!member) {
+    return { message: "Member not found" };
+  }
+
+  let updatedProfilePic = member.profilePic; // get existingProfilePic from the member object
 
   let url;
 
-  if (profilePic) {
+  if (profilePic?.size > 0) {
     const buffer = await profilePic.arrayBuffer();
     if (buffer.byteLength > 2000000) {
       // limit file size to 2MB
@@ -237,17 +244,7 @@ export async function updateMemberProfile(prevState, formData) {
     });
 
     url = result.secure_url;
-  }
-
-  const dbClient = await dbConnection;
-  const db = await dbClient.db("Sandsharks");
-
-  const member = await db
-    .collection("members")
-    .findOne({ _id: new ObjectId(_id) });
-
-  if (!member) {
-    return { message: "Member not found" };
+    updatedProfilePic = { status: "pending", url: url };
   }
 
   // Update the member with the profile picture URL and other fields
@@ -260,7 +257,7 @@ export async function updateMemberProfile(prevState, formData) {
         pronouns,
         email,
         about,
-        profilePic: url ? { status: "pending", url: url } : undefined,
+        profilePic: updatedProfilePic,
       },
     }
   );
@@ -656,6 +653,10 @@ export async function replyToPost(postId) {
               name: firstName,
               email,
               userId: _id.toString(),
+              pic:
+                member?.profilePic?.status === "approved"
+                  ? member.profilePic.url
+                  : null,
               createdAt: new Date(),
             },
           },
