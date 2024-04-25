@@ -49,7 +49,7 @@ const SignupForm = () => {
           type="text"
           id="firstName"
           name="firstName"
-          placeholder="The name you go by - will be visible on the website"
+          placeholder="The name you go by"
           required
         />
         <label htmlFor="lastName">Last Name</label>
@@ -76,7 +76,7 @@ const SignupForm = () => {
           type="email"
           id="email"
           name="email"
-          placeholder="This email will be your login as well as for email updates if you opt in"
+          placeholder="Will be used for login"
           required
         />
         {state?.email && (
@@ -88,7 +88,7 @@ const SignupForm = () => {
             type={showPassword ? "text" : "password"}
             id="password"
             name="password"
-            placeholder="Must be at least 6 characters long"
+            placeholder="6 characters minimum"
             required
             className="block mr-2 flex-grow"
           />
@@ -97,7 +97,11 @@ const SignupForm = () => {
             onClick={togglePasswordVisibility}
             className="ml-2"
           >
-            {showPassword ? "Hide password" : "Show password"}
+            {showPassword ? (
+              <img src="/images/icons8-hide-16.png" alt="Hide password" />
+            ) : (
+              <img src="/images/icons8-eye-16.png" alt="Show password" />
+            )}
           </button>
         </div>
         {state?.password && (
@@ -109,7 +113,7 @@ const SignupForm = () => {
             type={showConfirmPassword ? "text" : "password"}
             id="confirmPassword"
             name="confirmPassword"
-            placeholder="Must match the password above"
+            placeholder="Confirm password"
             required
             className="block mr-2 flex-grow"
           />
@@ -118,7 +122,11 @@ const SignupForm = () => {
             onClick={toggleConfirmPasswordVisibility}
             className="ml-2"
           >
-            {showConfirmPassword ? "Hide password" : "Show password"}
+            {showConfirmPassword ? (
+              <img src="/images/icons8-hide-16.png" alt="Hide password" />
+            ) : (
+              <img src="/images/icons8-eye-16.png" alt="Show password" />
+            )}
           </button>
         </div>
         {state?.confirmPassword && (

@@ -51,17 +51,32 @@ const Posts = async ({ posts, user }) => {
                     </div>
                     <div className="mt-4 mb-4">
                       <h1>Who's going:</h1>
-                      <div className="flex mt-2">
+                      <div
+                        className="grid grid-cols-1 gap-2 mt-2"
+                        style={{
+                          gridTemplateColumns:
+                            "repeat(auto-fill, minmax(60px, 1fr))",
+                        }}
+                      >
                         {post.replies.map((reply) => (
-                          <div key={reply._id} className="relative mr-1 group">
-                            <Image
-                              src={reply?.pic || "/images/zac.webp"}
-                              alt={reply?.name}
-                              width={60}
-                              height={60}
-                              className="rounded-full"
-                            />
-                            <div className="absolute bottom-0 left-0 bg-black text-white text-xs p-1 opacity-0 group-hover:opacity-100">
+                          <div
+                            key={reply._id}
+                            className="flex flex-col items-center group"
+                          >
+                            <div
+                              className="relative rounded-full overflow-hidden"
+                              style={{ width: "60px", height: "60px" }}
+                            >
+                              <div style={{ paddingTop: "100%" }}>
+                                <Image
+                                  src={reply?.pic || "/images/zac.webp"}
+                                  alt={reply?.name}
+                                  layout="fill"
+                                  className="absolute top-0 left-0 object-cover object-center"
+                                />
+                              </div>
+                            </div>
+                            <div className="text-center mt-1 text-xs">
                               {reply?.name}
                             </div>
                           </div>

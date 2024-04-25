@@ -56,7 +56,11 @@ const SignInForm = () => {
           onClick={togglePasswordVisibility}
           className="ml-2"
         >
-          {showPassword ? "Hide password" : "Show password"}
+          {showPassword ? (
+            <img src="/images/icons8-hide-16.png" alt="Hide password" />
+          ) : (
+            <img src="/images/icons8-eye-16.png" alt="Show password" />
+          )}
         </button>
       </div>
       {state?.email && (
