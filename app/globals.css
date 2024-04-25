@@ -10,7 +10,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --foreground-rgb: 255, 255, 255;
+    --foreground-rgb: 0, 0, 0; /* change this to black */
     --background-start-rgb: 0, 0, 0;
     --background-end-rgb: 0, 0, 0;
   }
@@ -18,7 +18,6 @@
 
 body {
   color: rgb(var(--foreground-rgb));
-  
 }
 
 @layer utilities {
@@ -27,13 +26,18 @@ body {
   }
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   color: red;
   font-style: italic;
 }
 
 nav {
-  padding: 1rem
+  padding: 1rem;
 }
 
 .btn {
@@ -42,15 +46,12 @@ nav {
   background: rgb(236, 99, 213);
   border: none;
   cursor: pointer;
-  transition: all 0.1s;   
+  transition: all 0.1s;
 }
 
 .btn:hover {
-
   background: rgb(240, 142, 223);
 }
-
-
 
 @layer utilities {
   .text-balance {
