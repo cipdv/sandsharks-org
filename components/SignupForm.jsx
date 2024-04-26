@@ -40,8 +40,9 @@ const SignupForm = () => {
   return (
     <form
       action={formAction}
-      className="bg-blue-100 p-4 rounded-md mt-6 w-full lg:w-3/5 mx-auto"
+      className="bg-blue-100 p-4 rounded-md mt-6 w-full lg:w-2/5 mx-auto"
     >
+      <h1 className="text-2xl font-bold">Become a Sandsharks Member</h1>
       <div className="flex flex-col gap-3 glassmorphism mt-4">
         <h1>Personal information</h1>
         <label htmlFor="firstName">First Name</label>
@@ -76,7 +77,7 @@ const SignupForm = () => {
           type="email"
           id="email"
           name="email"
-          placeholder="Will be used for login"
+          placeholder="Will be used as login"
           required
         />
         {state?.email && (

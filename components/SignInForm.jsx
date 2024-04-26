@@ -33,8 +33,9 @@ const SignInForm = () => {
   return (
     <form
       action={formAction}
-      className="bg-blue-100 p-4 rounded-md mt-6 w-full lg:w-3/5 mx-auto"
+      className="bg-blue-100 p-4 rounded-md mt-6 w-full lg:w-2/5 mx-auto"
     >
+      <h1 className="text-2xl font-bold mb-4">Sign in</h1>
       <input
         type="email"
         placeholder="Email"
@@ -49,7 +50,7 @@ const SignInForm = () => {
           placeholder="Password"
           name="password"
           required
-          className="block mr-2 flex-grow"
+          className="block mr-2 "
         />
         <button
           type="button"

@@ -126,11 +126,33 @@ const Posts = async ({ posts, user }) => {
                     </p>
                     <div className="mt-4 mb-4">
                       <h1>Who's going:</h1>
-                      {post?.beginnerClinic?.beginnerClinicReplies?.map(
-                        (reply) => (
-                          <p key={reply._id}>{reply?.name}</p>
-                        )
-                      )}
+                      <div className="flex flex-row flex-wrap">
+                        {post?.beginnerClinic?.beginnerClinicReplies?.map(
+                          (reply) => (
+                            <div
+                              key={reply._id}
+                              className="flex flex-col items-start group mt-2 mr-2"
+                            >
+                              <div
+                                className="relative rounded-full overflow-hidden"
+                                style={{ width: "40px", height: "40px" }}
+                              >
+                                <div style={{ paddingTop: "100%" }}>
+                                  <Image
+                                    src={reply?.pic || "/images/zac.webp"}
+                                    alt={reply?.name}
+                                    layout="fill"
+                                    className="absolute top-0 left-0 object-cover object-center"
+                                  />
+                                </div>
+                              </div>
+                              <div className="text-center mt-1 text-xs">
+                                {reply?.name}
+                              </div>
+                            </div>
+                          )
+                        )}
+                      </div>
                     </div>
                     {new Date(post.date) > new Date() &&
                       (post?.beginnerClinic?.beginnerClinicReplies?.length >=

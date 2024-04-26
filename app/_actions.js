@@ -836,6 +836,10 @@ export async function replyToBeginnerClinic(postId) {
           $push: {
             "beginnerClinic.beginnerClinicReplies": {
               name: preferredName || firstName,
+              pic:
+                member?.profilePic?.status === "approved"
+                  ? member.profilePic.url
+                  : null,
               email,
               userId: _id.toString(),
               createdAt: new Date(),
