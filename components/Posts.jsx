@@ -25,7 +25,7 @@ const Posts = async ({ posts, user }) => {
           })} ${date.getDate()}, ${date.getFullYear()}`;
 
           return (
-            <div className="bg-blue-100 p-4 rounded-md mt-4" key={post._id}>
+            <div className="bg-blue-100 rounded-md mt-4 pb-1" key={post._id}>
               <li key={post._id} className="bg-blue-100 p-4 rounded-md mt-4">
                 <h1 className="font-bold text-2xl mb-2">{post.title}</h1>
                 <h3>Posted by: {post.postedBy}</h3>
@@ -55,7 +55,7 @@ const Posts = async ({ posts, user }) => {
                         className="grid grid-cols-1 gap-2 mt-2"
                         style={{
                           gridTemplateColumns:
-                            "repeat(auto-fill, minmax(60px, 1fr))",
+                            "repeat(auto-fill, minmax(40px, 1fr))",
                         }}
                       >
                         {post.replies.map((reply) => (
@@ -65,7 +65,7 @@ const Posts = async ({ posts, user }) => {
                           >
                             <div
                               className="relative rounded-full overflow-hidden"
-                              style={{ width: "60px", height: "60px" }}
+                              style={{ width: "40px", height: "40px" }}
                             >
                               <div style={{ paddingTop: "100%" }}>
                                 <Image
@@ -93,7 +93,7 @@ const Posts = async ({ posts, user }) => {
                     await replyToPost(post._id);
                   }}
                 >
-                  <button type="submit" className="btn">
+                  <button type="submit" className="btn ml-4">
                     {post.replies.some((reply) => reply.email === user?.email)
                       ? "I can no longer go :("
                       : "I'll be there :D"}
@@ -103,7 +103,7 @@ const Posts = async ({ posts, user }) => {
               {post?.startTime &&
                 (post?.beginnerClinic &&
                 post?.beginnerClinic?.beginnerClinicOffered ? (
-                  <div className="bg-blue-300 rounded-lg p-4 mt-4">
+                  <div className="bg-blue-300 rounded-lg p-4 m-4 mb-8">
                     <h1>Beginner Clinic:</h1>
                     <p className="overflow-auto break-words">
                       {post?.beginnerClinic?.beginnerClinicMessage}
@@ -158,7 +158,7 @@ const Posts = async ({ posts, user }) => {
                       ))}
                   </div>
                 ) : (
-                  <div className="mt-4">
+                  <div className="m-4 pb-4">
                     <h1>
                       *Note: There will not be a beginner clinic offered on this
                       day.

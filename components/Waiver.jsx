@@ -23,7 +23,20 @@ const Waiver = () => {
   return (
     <form action={formAction} className="bg-blue-100 p-4 rounded-md">
       {state?.message && <h1>{state?.message}</h1>}
-      <h1 className="mb-8 text-3xl font-bold">
+      {/* <div className="mb-8">
+        <h1 className="mb-2 text-2xl font-bold">Welcome to Sandsharks!</h1>
+        <p>
+          Please <b>check your email</b> for a welcome message from Cip, the
+          league organizer. If you don't see it, check your spam folder. If you
+          still can't find it, please email
+          <a href="mailto:sandsharks.org@gmail.com">
+            {" "}
+            sandsharks.org@gmail.com
+          </a>
+          .
+        </p>
+      </div> */}
+      <h1 className="mb-8 text-2xl font-bold">
         To continue, please read and agree to the liability waiver and code of
         conduct:
       </h1>

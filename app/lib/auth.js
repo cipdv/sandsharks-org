@@ -16,7 +16,7 @@ export async function encrypt(payload) {
   return await new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
-    .setExpirationTime("10 min from now")
+    .setExpirationTime("6 days")
     .sign(key);
 }
 
@@ -61,9 +61,10 @@ export async function login(prevState, formData) {
   delete resultObj.password;
 
   // Create the session
-  const expires = user.rememberMe
-    ? new Date(Date.now() + 6 * 30 * 24 * 60 * 60 * 1000)
-    : new Date(Date.now() + 10 * 60 * 1000);
+  // const expires = user.rememberMe
+  //   ? new Date(Date.now() + 6 * 30 * 24 * 60 * 60 * 1000)
+  //   : new Date(Date.now() + 10 * 60 * 1000);
+  const expires = new Date(Date.now() + 6 * 24 * 60 * 60 * 1000);
   const session = await encrypt({ resultObj, expires });
 
   // Save the session in a cookie

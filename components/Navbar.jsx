@@ -4,16 +4,16 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/app/_actions";
 
 const Navbar = async () => {
-  const currentUser = await getCurrentUser();
+  const currentUser = await getSession();
 
   return (
-    <div className="flex justify-between items-center pt-4 pb-4 mb-14 ">
+    <div className="flex justify-between items-center pt-4 pb-4 mb-14 pl-6 pr-6 ">
       <Link href="/">
-        <h1>Toronto Sandsharks Beach Volleyball Club</h1>
+        <h1>Toronto Sandsharks Beach Volleyball</h1>
       </Link>
       {currentUser ? (
         <>
-          {currentUser.memberType === "ultrashark" && (
+          {currentUser?.resultObj?.memberType === "ultrashark" && (
             <Link href="/dashboard/ultrashark/members" className="mr-2">
               Members
             </Link>

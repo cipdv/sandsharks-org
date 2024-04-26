@@ -83,7 +83,7 @@ const SignupForm = () => {
           <p className="text-red-500 text-lg text-bold">{state?.email}</p>
         )}
         <label htmlFor="password">Password</label>
-        <div className="flex items-center mb-4">
+        <div className="flex items-center">
           <input
             type={showPassword ? "text" : "password"}
             id="password"
@@ -134,6 +134,12 @@ const SignupForm = () => {
             {state?.confirmPassword}
           </p>
         )}
+        {/* <div>
+          <input type="checkbox" name="newToBeach" id="newToBeach" />
+          <label className="ml-2" htmlFor="newToBeach">
+            I'm new to beach volleyball
+          </label>
+        </div> */}
         <p className="text-red-500 text-lg text-bold">{state?.message}</p>
         <SubmitButton />
       </div>
