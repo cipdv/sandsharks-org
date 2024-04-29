@@ -113,7 +113,7 @@ const MemberProfile = ({ user }) => {
             <label htmlFor="aboutMe" className="mr-2">
               About Me
             </label>
-            <p className="text-sm">{500 - aboutCount} characters remaining</p>
+            <p className="text-sm">{300 - aboutCount} characters remaining</p>
           </div>
           <textarea
             id="about"
@@ -122,7 +122,7 @@ const MemberProfile = ({ user }) => {
             cols="30"
             placeholder="Tell us something about yourself"
             defaultValue={user?.about}
-            maxLength="500"
+            maxLength="300"
             onChange={handleAboutChange}
             className="p-2"
           />

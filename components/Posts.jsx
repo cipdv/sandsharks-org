@@ -2,6 +2,9 @@ import { replyToPost, replyToBeginnerClinic } from "@/app/_actions";
 import Image from "next/image";
 
 const Posts = async ({ posts, user }) => {
+  posts = JSON.parse(JSON.stringify(posts));
+  user = JSON.parse(JSON.stringify(user));
+
   function convertTo12Hour(time) {
     if (!time) {
       return "N/A";
@@ -26,12 +29,12 @@ const Posts = async ({ posts, user }) => {
 
           return (
             <div className="bg-blue-100 rounded-md mt-4 pb-1" key={post._id}>
-              <li key={post._id} className="bg-blue-100 p-4 rounded-md mt-4">
+              <li className="bg-blue-100 p-4 rounded-md mt-4">
                 <h1 className="font-bold text-2xl mb-2">{post.title}</h1>
                 <h3>Posted by: {post.postedBy}</h3>
                 <p className="overflow-auto break-words">
                   {post.message.split("<br />").map((line, index) => (
-                    <p key={index}>
+                    <p key={`${post._id}-${index}`}>
                       {line}
                       <br />
                     </p>
