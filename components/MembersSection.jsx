@@ -24,7 +24,7 @@ const MembersSection = ({ members, session }) => {
                     member.profilePic?.status === "approved" &&
                     member.profilePic?.url
                       ? member.profilePic.url
-                      : "/images/zac.webp"
+                      : "/images/sandsharks-icon2.svg"
                   }
                   alt="profile photo"
                   layout="fill"

@@ -72,7 +72,9 @@ const Posts = async ({ posts, user }) => {
                             >
                               <div style={{ paddingTop: "100%" }}>
                                 <Image
-                                  src={reply?.pic || "/images/zac.webp"}
+                                  src={
+                                    reply?.pic || "/images/sandsharks-icon2.svg"
+                                  }
                                   alt={reply?.name}
                                   layout="fill"
                                   className="absolute top-0 left-0 object-cover object-center"

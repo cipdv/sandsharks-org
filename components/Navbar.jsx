@@ -2,14 +2,24 @@ import Link from "next/link";
 import { getSession, logout } from "@/app/lib/auth";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/app/_actions";
+import Image from "next/image";
 
 const Navbar = async () => {
   const currentUser = await getSession();
 
   return (
-    <div className="flex justify-between items-center pt-4 pb-4 mb-14 pl-6 pr-6 ">
+    <div className="flex justify-between items-center pt-4 pb-4 mb-14 ">
       <Link href="/">
-        <h1>Toronto Sandsharks Beach Volleyball</h1>
+        <div className="flex items-center">
+          <Image
+            src="/images/sandsharks-icon-red.svg"
+            alt="Toronto Sandsharks Logo"
+            width={50}
+            height={50}
+            className="mr-1"
+          />
+          <h1>Toronto Sandsharks Beach Volleyball</h1>
+        </div>
       </Link>
       {currentUser ? (
         <>
