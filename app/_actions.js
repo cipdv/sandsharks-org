@@ -352,6 +352,13 @@ export async function updateMemberProfile(prevState, formData) {
     const base64 = Buffer.from(buffer).toString("base64");
     const dataUrl = `data:image/jpeg;base64,${base64}`;
 
+    // Configure Cloudinary
+    cloudinary.config({
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET,
+    });
+
     const result = await new Promise((resolve, reject) => {
       cloudinary.uploader.upload(
         dataUrl,
