@@ -11,11 +11,12 @@ export default async function Page() {
           allies.
         </h1>
         <Image
-          src="/images/sandsharks-group.jpg"
+          src="/images/sandsharks-group.png"
           width={100}
           height={100}
           className="w-full object-cover mt-4"
           alt="Sandsharks group photo"
+          unoptimized
         />
         <AboutTheLeague />
         <Link href="/signup">
