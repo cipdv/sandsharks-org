@@ -18,7 +18,7 @@
 
 body {
   color: rgb(var(--foreground-rgb));
-  background-image: url("/images/1x/background.webp");
+  background-image: url("/images/1x/sand-background.webp");
   background-repeat: no-repeat;
   background-size: cover;
   background-attachment: fixed;
@@ -26,7 +26,7 @@ body {
 
 @media (max-width: 640px) {
   body {
-    background-image: url("/images/1x/mobile-background.webp");
+    background-image: url("/images/1x/sand-background-mobile.webp");
   }
 }
 
@@ -42,8 +42,9 @@ h3,
 h4,
 h5,
 h6 {
-  color: red;
+  color: rgb(23, 103, 122);
   font-style: italic;
+  font-weight: 500;
 }
 
 nav {
@@ -53,14 +54,37 @@ nav {
 .btn {
   padding: 0.8rem;
   border-radius: 0.5rem;
-  background: rgb(236, 99, 213);
+  background: rgb(46, 190, 190);
+  /* background: rgb(156, 71, 212); */
   border: none;
   cursor: pointer;
   transition: all 0.1s;
 }
 
 .btn:hover {
-  background: rgb(240, 142, 223);
+  background: rgb(227, 118, 241);
+  /* background: rgb(240, 142, 223); */
+}
+
+.letter-btn {
+  padding: 0.4rem;
+  border-radius: 0.5rem;
+  background: rgb(227, 118, 241);
+  border: none;
+  cursor: pointer;
+  font-size: 0.8rem; /* Smaller font size for mobile */
+}
+
+.letter-btn-1 {
+  background: rgb(46, 190, 190);
+}
+
+/* Increase padding and font size for larger screens */
+@media (min-width: 640px) {
+  .letter-btn {
+    padding: 0.8rem;
+    font-size: 1rem;
+  }
 }
 
 @layer utilities {

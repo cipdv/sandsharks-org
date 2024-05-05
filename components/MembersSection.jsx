@@ -1,9 +1,19 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-const MembersSection = ({ members, session }) => {
-  if (session.resultObj.memberType === "member") {
-    const sortedMembers = [...members]
+const MembersSection = ({ members, user }) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 20;
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  if (user?.memberType === "member") {
+    let sortedMembers = [...members]
       .filter(
         (member) =>
           member.memberType === "member" ||
@@ -12,11 +22,34 @@ const MembersSection = ({ members, session }) => {
       )
       .sort((a, b) => a.firstName.localeCompare(b.firstName));
 
+    // Pagination
+    const totalPages = Math.ceil(sortedMembers.length / itemsPerPage);
+    const membersOnPage = sortedMembers.slice(
+      (currentPage - 1) * itemsPerPage,
+      currentPage * itemsPerPage
+    );
+
     return (
       <div className="mx-auto text-center px-4">
-        <div className="flex flex-wrap justify-center gap-4">
-          {sortedMembers.map((member, index) => (
-            <div className="w-64 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 overflow-auto">
+        <div className="flex justify-center space-x-2 mt-4">
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <button
+              key={page}
+              onClick={() => handlePageChange(page)}
+              className={`px-2 py-1 rounded ${
+                currentPage === page ? "letter-btn" : "letter-btn-1"
+              }`}
+            >
+              {page}
+            </button>
+          ))}
+        </div>
+        <div className="flex flex-wrap justify-center gap-4 mt-4">
+          {membersOnPage.map((member, index) => (
+            <div
+              key={index}
+              className="w-64 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 overflow-auto"
+            >
               <div className="w-full h-48 relative rounded-t-lg overflow-hidden">
                 <Image
                   className="object-cover absolute inset-0"
@@ -27,21 +60,35 @@ const MembersSection = ({ members, session }) => {
                       : "/images/sandsharks-icon2.svg"
                   }
                   alt="profile photo"
-                  layout="fill"
+                  fill={true}
+                  sizes="(max-width: 768px) 100vw, 33vw"
                 />
               </div>
-              <div class="p-5 break-words text-sm">
-                <h5 class="mb-1 text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+              <div className="p-5 break-words text-sm">
+                <h5 className="mb-1 text-xl font-bold tracking-tight text-gray-900 dark:text-white">
                   {member?.firstName}
                 </h5>
-                <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
                   {member?.pronouns}
                 </p>
-                <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
                   {member?.about}
                 </p>
               </div>
             </div>
+          ))}
+        </div>
+        <div className="flex justify-center space-x-2 mt-4">
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <button
+              key={page}
+              onClick={() => handlePageChange(page)}
+              className={`px-2 py-1 rounded ${
+                currentPage === page ? "letter-btn" : "letter-btn-1"
+              }`}
+            >
+              {page}
+            </button>
           ))}
         </div>
       </div>

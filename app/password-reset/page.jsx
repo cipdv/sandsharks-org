@@ -26,6 +26,7 @@ const passwordResetPage = () => {
         action={formAction}
         className="bg-blue-100 p-4 rounded-md mt-6 w-full lg:w-3/5 mx-auto"
       >
+        <h1 className="text-2xl font-bold mb-4">Reset your password</h1>
         <label>Enter the email you registered with:</label>
         <input
           type="email"

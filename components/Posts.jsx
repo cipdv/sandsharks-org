@@ -32,14 +32,14 @@ const Posts = async ({ posts, user }) => {
               <li className="bg-blue-100 p-4 rounded-md mt-4">
                 <h1 className="font-bold text-2xl mb-2">{post.title}</h1>
                 <h3>Posted by: {post.postedBy}</h3>
-                <p className="overflow-auto break-words">
+                <div className="overflow-auto break-words">
                   {post.message.split("<br />").map((line, index) => (
                     <p key={`${post._id}-${index}`}>
                       {line}
                       <br />
                     </p>
                   ))}
-                </p>
+                </div>
                 {post.startTime && (
                   <div>
                     <div className="mt-4">
@@ -68,7 +68,11 @@ const Posts = async ({ posts, user }) => {
                           >
                             <div
                               className="relative rounded-full overflow-hidden"
-                              style={{ width: "40px", height: "40px" }}
+                              style={{
+                                width: "40px",
+                                height: "40px",
+                                position: "relative",
+                              }}
                             >
                               <div style={{ paddingTop: "100%" }}>
                                 <Image
@@ -76,7 +80,7 @@ const Posts = async ({ posts, user }) => {
                                     reply?.pic || "/images/sandsharks-icon2.svg"
                                   }
                                   alt={reply?.name}
-                                  layout="fill"
+                                  fill={true}
                                   className="absolute top-0 left-0 object-cover object-center"
                                 />
                               </div>
@@ -140,7 +144,11 @@ const Posts = async ({ posts, user }) => {
                             >
                               <div
                                 className="relative rounded-full overflow-hidden"
-                                style={{ width: "40px", height: "40px" }}
+                                style={{
+                                  width: "40px",
+                                  height: "40px",
+                                  position: "relative",
+                                }}
                               >
                                 <div style={{ paddingTop: "100%" }}>
                                   <Image
@@ -149,7 +157,7 @@ const Posts = async ({ posts, user }) => {
                                       "/images/sandsharks-icon2.svg"
                                     }
                                     alt={reply?.name}
-                                    layout="fill"
+                                    fill={true}
                                     className="absolute top-0 left-0 object-cover object-center"
                                   />
                                 </div>

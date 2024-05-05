@@ -3,7 +3,7 @@ import React from "react";
 const AboutTheLeague = () => {
   return (
     <div>
-      <h1 className="mt-4">Who is welcome to join:</h1>
+      <h1 className="mt-6 text-xl">Who is welcome to join:</h1>
       <p className="mt-2">
         Anyone and everyone!{" "}
         <b>
@@ -23,7 +23,7 @@ const AboutTheLeague = () => {
         free clinics most weekends for new players who want to learn how to play
         the game.
       </p>
-      <h1 className="mt-4">Where do we play:</h1>
+      <h1 className="mt-4 text-xl">Where do we play:</h1>
       <p className="mt-2">
         <a
           className="text-blue-700 hover:text-blue-500"
@@ -40,7 +40,7 @@ const AboutTheLeague = () => {
         There is paid parking available at the park, and lots of places to lock
         up bikes. The Lakeshore bike path will take you right there!
       </p>
-      <h1 className="mt-4">When do we play:</h1>
+      <h1 className="mt-4 text-xl">When do we play:</h1>
       <p className="mt-2">
         There is no set schedule, but we try to go out most weekends when the
         sun is shining (depending on the weather forecast and court
@@ -50,7 +50,7 @@ const AboutTheLeague = () => {
         Games are all drop-in, so come when you can, play as many games as you'd
         like, and leave when you need to.
       </p>
-      <h1 className="mt-4">How do I sign up:</h1>
+      <h1 className="mt-4 text-xl">How do I sign up:</h1>
       <p className="mt-2">
         The league is free to join. Just click the button below to sign up to
         become a member. Once registered, you'll have access to our weekly

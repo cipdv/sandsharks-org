@@ -121,6 +121,28 @@ const Waiver = () => {
           all liability.
         </p>
       </div>
+      <div>
+        <h2 className="mt-4 font-bold">Privacy Policy</h2>
+        <p className="mt-4">
+          Toronto SandSharks is committed to protecting your privacy. The only
+          information visible to other members on the website will be your first
+          name and pronouns, and if you choose to include a photo and whatever
+          information you include in your "about me" section. We will only use
+          your personal information to contact you about league events and to
+          run the league. We will never sell your information to third parties.
+          The website uses cookies solely for the purpose of maintaining your
+          login session. By continuing to use the site, you agree to the use of
+          cookies.
+        </p>
+        <p className="mt-4">
+          By clicking agree,{" "}
+          <b>
+            I agree that Toronto SandSharks may collect and store my personal
+            information for the purposes of running the league and contacting me
+            about league events.
+          </b>
+        </p>
+      </div>
       <SubmitButton />
     </form>
   );
