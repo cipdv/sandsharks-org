@@ -5,7 +5,7 @@ import Navbar from "@/components/Navbar";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "Toronto Sandsharks Beach Volleyball Club",
+  title: "Toronto Sandsharks Beach Volleyball",
   description: "LGBTQ+ beach volleyball in Toronto",
 };
 
