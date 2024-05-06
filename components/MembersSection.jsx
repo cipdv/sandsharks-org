@@ -57,7 +57,7 @@ const MembersSection = ({ members, user }) => {
                     member.profilePic?.status === "approved" &&
                     member.profilePic?.url
                       ? member.profilePic.url
-                      : "/images/sandsharks-icon2.svg"
+                      : "/images/sandsharks-rainbow-icon.svg"
                   }
                   alt="profile photo"
                   fill={true}
@@ -96,11 +96,11 @@ const MembersSection = ({ members, user }) => {
   } else {
     return (
       <div className="flex flex-col items-center text-center">
-        <h1 className="text-2xl text-red-500">
+        <h1 className="text-2xl text-sandsharks-blue">
           Your current status is pending; you must be an approved member to view
           this section.
         </h1>
-        <h1 className="text-2xl text-red-500">Check back later :)</h1>
+        <h1 className="text-2xl text-sandsharks-blue">Check back later :)</h1>
       </div>
     );
   }
