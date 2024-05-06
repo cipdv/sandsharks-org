@@ -77,7 +77,8 @@ const Posts = async ({ posts, user }) => {
                               <div style={{ paddingTop: "100%" }}>
                                 <Image
                                   src={
-                                    reply?.pic || "/images/sandsharks-icon2.svg"
+                                    reply?.pic ||
+                                    "/images/sandsharks-rainbow-icon.svg"
                                   }
                                   alt={reply?.name}
                                   fill={true}
@@ -154,7 +155,7 @@ const Posts = async ({ posts, user }) => {
                                   <Image
                                     src={
                                       reply?.pic ||
-                                      "/images/sandsharks-icon2.svg"
+                                      "/images/sandsharks-rainbow-icon.svg"
                                     }
                                     alt={reply?.name}
                                     fill={true}
