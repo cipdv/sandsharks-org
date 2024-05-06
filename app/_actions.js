@@ -588,7 +588,7 @@ export async function sendPasswordReset(prevState, formData) {
     if (sendResult && sendResult.messageId) {
       return {
         message:
-          "If this email is registered, a link to reset your password will be sent to this email address.",
+          "If this email is registered, a link to reset your password will be sent to this email address. Check your junkmail and spam folders.",
       };
     } else {
       // Remove token from database if email sending failed
