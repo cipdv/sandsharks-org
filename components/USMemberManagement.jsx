@@ -2,12 +2,16 @@ import Image from "next/image";
 import { deactivateMemberProfile, deleteMemberProfile } from "@/app/_actions";
 
 const USMembersManagement = ({ members }) => {
+  const filteredMembers = members.filter(
+    (member) => member.memberType === "member"
+  );
   return (
     <div className="mt-5">
-      <h1 className="font-bold text-2xl">Members</h1>
+      <h1 className="font-bold text-2xl">Members: {filteredMembers.length}</h1>
+
       <div className="bg-blue-100 p-4 rounded-md mt-4 overflow-x-auto">
-        {members
-          .filter((member) => member.memberType === "member")
+        {filteredMembers
+          .sort((a, b) => a.firstName.localeCompare(b.firstName))
           .map((member) => (
             <div
               key={member.id}

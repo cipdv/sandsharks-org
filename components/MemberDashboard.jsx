@@ -13,7 +13,7 @@ const MemberDashboard = ({ user, posts }) => {
         <div className="w-full lg:w-2/3 order-2 lg:order-1">
           <Posts posts={posts} user={user} />
         </div>
-        <div className="w-full lg:w-1/3 order-1 lg:order-2">
+        <div className="w-full lg:w-1/3 order-1 lg:order-2 lg:sticky lg:top-0">
           <SideNav />
         </div>
       </div>
