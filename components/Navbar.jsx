@@ -12,7 +12,7 @@ const Navbar = async () => {
       <Link href="/">
         <div className="flex items-center">
           <Image
-            src="/images/sandsharks-icon-red.svg"
+            src="/images/sandsharks-rainbow-icon.svg"
             alt="Toronto Sandsharks Logo"
             width={50}
             height={50}
