@@ -50,7 +50,7 @@ const MembersSection = ({ members, user }) => {
               key={index}
               className="w-64 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 overflow-auto"
             >
-              <div className="w-full h-48 relative rounded-t-lg overflow-hidden">
+              <div className="w-full h-64 relative rounded-t-lg overflow-hidden">
                 <Image
                   className="object-cover absolute inset-0"
                   src={
