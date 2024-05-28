@@ -123,128 +123,125 @@ export async function registerNewMember(prevState, formData) {
       return { email: "^ This email is already registered" };
     }
 
-    // if (formDataObj?.newToBeach === "on") {
-    //   // send email to email
+    const subject = "Welcome to Sandsharks!";
+    const body = `<div>
+      <h1>Hi ${firstName},</h1>
+      <h2>Welcome to Sandsharks!</h2>
+      <p>We are excited to have you join our community.</p>
+      <p>
+        My name is Cip, I run the league and I'm here to help you get started.
+      </p>
+      <p>
+        Now that you’re signed up, you can login at sandsharks.ca to check the
+        weekly updates to see when we’ll be playing. Once you login, you'll need to accept the waiver and agree to the code of conduct to continue.
+      </p>
+      
+        <h3>
+        If you do not have any experience playing 2v2 beach volleyball or have
+        some experience playing indoor volleyball at a recreational level:
+        </h3>
+        <p>
+        Have no fear, we run free clinics on most weekends to help beginner
+        players learn how to play the game. I would like you to start with the
+        beginner clinic before jumping into playing games with the group, and
+        once I see that you can consistently serve, pass, set, and attack the
+        ball, then you can join in with the rest of the group.
+      </p>
+      <p>
+        Check the website on Wednesdays to see the updates for when we’ll be
+        playing that week. If I’m running a clinic that weekend, it will be
+        posted with the start and end times. If you plan on coming, please click
+        the “Yas, plz help me!” button. There is limited space for new players
+        in the clinic, so if you can no longer make it, please click the “I
+        can’t make it anymore” button so that someone else can take that spot.
+        Feel free to bring a friend, just make sure they have also signed up on
+        the website, completed the waiver, and have RSVP’d to the weekly post.
+      </p>
+        <h3>
+          If you have experience playing beach volleyball or indoor volleyball
+          at a competitive level:
+          </h3>
+          
+        <p>
+        Check the website on Wednesdays to see the updates for when we’ll be
+        playing that week. If you plan on coming, please click the “I’ll be
+        there!” button, it helps me know how much equipment to bring to the
+        beach, and please click the “I can no longer make it” button if you
+        change your mind.
+      </p>
+      <p>
+        The start and end times are posted on the website, and I update the
+        court numbers we’ll be playing on when I arrive at the beach on game day
+        (check the top of the wooden posts for the numbers). You can drop by
+        anytime we’re playing and ask for Cip (pronounced Kip). I’m always
+        around, but might be playing a game or filling up a water bottle, so
+        just wait until we can meet before jumping into any games. I’ll show you
+        how to use the sign-up sheets to get started playing games with us. You
+        can stay for as long as you’d like and play as many games as you can fit
+        in.
+      </p>
+      <p>
+        There’s no need to bring a partner because you’ll be playing with a
+        different person every game, but feel welcome to bring a friend, just
+        make sure they have also signed up on the website, completed the waiver,
+        and have RSVP’d to the weekly post.
+      </p>
+      <p>
+        If you have only played indoor volleyball,
+        <a href="https://www.youtube.com/watch?v=FzO7EvB7mDE">
+          here’s a great video
+        </a>
+        that explains all the unique rules of 2v2 beach volleyball. The complete
+        rules of 2v2 beach volleyball are posted on
+        <a href="https://www.sandsharks.ca/member/rules">
+          sandsharks.ca/member/rules
+        </a>
+        .
+      </p>
+      <br />
+        
+      <p>
+        If you have any questions, feel free to email me at
+        <a href="mailto:sandsharks.org@gmail.com">sandsharks.org@gmail.com</a>.
+      </p>
+      <p>I’m looking forward to welcoming you into the group!</p>
+      <p>See you on the sand,</p>
+      <p>Cip</p>
+      <p>sandsharks.org@gmail.com</p>
+    </div>`;
 
-    //   const subject = "Welcome to Sandsharks!";
-    //   const body = `<div>
-    //   <h1>Hi ${firstName},</h1>
-    //   <h2>Welcome to Sandsharks!</h2>
-    //   <p>We are excited to have you join our community.</p>
-    //   <p>
-    //     My name is Cip, I run the league and I'm here to help you get started.
-    //   </p>
-    //   <p>
-    //     Now that you’re signed up, you can login at sandsharks.ca to check the
-    //     weekly updates to see when we’ll be playing. Once you login, you'll need to accept the waiver and agree to the code of conduct to continue.
-    //   </p>
-    //   <br />
-    //   <p>
-    //     <b>
-    //       If you have experience playing beach volleyball or indoor volleyball
-    //       at a competitive level
-    //     </b>
-    //     , check the website on Wednesdays to see the updates for when we’ll be
-    //     playing that week. If you plan on coming, please click the “I’ll be
-    //     there!” button, it helps me know how much equipment to bring to the
-    //     beach, and please click the “I can no longer make it” button if you
-    //     change your mind.
-    //   </p>
-    //   <p>
-    //     The start and end times are posted on the website, and I update the
-    //     court numbers we’ll be playing on when I arrive at the beach on game day
-    //     (check the top of the wooden posts for the numbers). You can drop by
-    //     anytime we’re playing and ask for Cip (pronounced Kip). I’m always
-    //     around, but might be playing a game or filling up a water bottle, so
-    //     just wait until we can meet before jumping into any games. I’ll show you
-    //     how to use the sign-up sheets to get started playing games with us. You
-    //     can stay for as long as you’d like and play as many games as you can fit
-    //     in.
-    //   </p>
-    //   <p>
-    //     There’s no need to bring a partner because you’ll be playing with a
-    //     different person every game, but feel welcome to bring a friend, just
-    //     make sure they have also signed up on the website, completed the waiver,
-    //     and have RSVP’d to the weekly post.
-    //   </p>
-    //   <p>
-    //     If you have only played indoor volleyball,
-    //     <a href="https://www.youtube.com/watch?v=FzO7EvB7mDE">
-    //       here’s a great video
-    //     </a>
-    //     that explains all the unique rules of 2v2 beach volleyball. The complete
-    //     rules of 2v2 beach volleyball are posted on
-    //     <a href="https://www.sandsharks.ca/member/rules">
-    //       sandsharks.ca/member/rules
-    //     </a>
-    //     .
-    //   </p>
-    //   <br />
-    //   <p>
-    //     <b>
-    //     If you do not have any experience playing beach volleyball or have
-    //     limited experience playing indoor volleyball at a recreational level
-    //     </b>,
-    //     have no fear, I run free clinics on most weekends to help beginner
-    //     players learn how to play the game. I would like you to start with the
-    //     beginner clinic before jumping into playing games with the group, and
-    //     once I see that you can consistently serve, pass, set, and attack the
-    //     ball, then you can join in with the rest of the group.
-    //   </p>
-    //   <p>
-    //     Check the website on Wednesdays to see the updates for when we’ll be
-    //     playing that week. If I’m running a clinic that weekend, it will be
-    //     posted with the start and end times. If you plan on coming, please click
-    //     the “Yas, plz help me!” button. There is limited space for new players
-    //     in the clinic, so if you can no longer make it, please click the “I
-    //     can’t make it anymore” button so that someone else can take that spot.
-    //     Feel free to bring a friend, just make sure they have also signed up on
-    //     the website, completed the waiver, and have RSVP’d to the weekly post.
-    //   </p>
-    //   <br />
-    //   <p>
-    //     If you have any questions, feel free to email me at
-    //     <a href="mailto:sandsharks.org@gmail.com">sandsharks.org@gmail.com</a>.
-    //   </p>
-    //   <p>I’m looking forward to welcoming you into the group!</p>
-    //   <p>See you on the sand,</p>
-    //   <p>Cip</p>
-    //   <p>sandsharks.org@gmail.com</p>
-    // </div>`;
+    const transport = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.SMTP_EMAIL,
+        pass: process.env.SMTP_PASSWORD,
+      },
+    });
 
-    //   const transport = nodemailer.createTransport({
-    //     service: "gmail",
-    //     auth: {
-    //       user: process.env.SMTP_EMAIL,
-    //       pass: process.env.SMTP_PASSWORD,
-    //     },
-    //   });
+    try {
+      const testResult = await transport.verify();
+    } catch (error) {
+      console.error("error", error);
+      return { error: "Something went wrong, please try again." };
+    }
 
-    //   try {
-    //     const testResult = await transport.verify();
-    //   } catch (error) {
-    //     console.error("error", error);
-    //     return { error: "Something went wrong, please try again." };
-    //   }
+    try {
+      const sendResult = await transport.sendMail({
+        from: process.env.SMTP_EMAIL,
+        to: email,
+        subject,
+        html: body,
+      });
 
-    //   try {
-    //     const sendResult = await transport.sendMail({
-    //       from: process.env.SMTP_EMAIL,
-    //       to: email,
-    //       subject,
-    //       html: body,
-    //     });
-
-    //     if (sendResult && sendResult.messageId) {
-    //       console.log(`Email sent to ${email}`);
-    //     } else {
-    //       return { error: "Failed to send welcome email" };
-    //     }
-    //   } catch (error) {
-    //     console.log(error);
-    //     return { error: "Something went wrong. Please try again." };
-    //   }
-    // }
+      if (sendResult && sendResult.messageId) {
+        console.log(`Email sent to ${email}`);
+      } else {
+        return { error: "Failed to send welcome email" };
+      }
+    } catch (error) {
+      console.log(error);
+      return { error: "Something went wrong. Please try again." };
+    }
 
     //hash password
     const salt = await bcrypt.genSalt(10);
@@ -657,6 +654,7 @@ export const createNewPost = async (prevState, formData) => {
   const user = session?.resultObj?.firstName;
 
   const formattedMessage = formData.get("message").replace(/\n/g, "<br />");
+  const buttonOn = formData.get("includeButton") === "on" ? true : false;
 
   const result = PostFormSchema.safeParse({
     title: formData.get("title"),
@@ -664,6 +662,9 @@ export const createNewPost = async (prevState, formData) => {
     date: formData.get("date"),
     startTime: formData.get("startTime"),
     endTime: formData.get("endTime"),
+    buttonOption1: formData.get("buttonOption1"),
+    buttonOption2: formData.get("buttonOption2"),
+    includeButton: buttonOn,
     beginnerClinic: {
       beginnerClinicOffered: formData.get("beginnerClinicOffered")
         ? true
@@ -679,7 +680,16 @@ export const createNewPost = async (prevState, formData) => {
     return { message: "Failed to create post" };
   }
 
-  const { title, message, date, startTime, endTime } = result.data;
+  const {
+    title,
+    message,
+    date,
+    startTime,
+    endTime,
+    includeButton,
+    buttonOption1,
+    buttonOption2,
+  } = result.data;
 
   const {
     beginnerClinicOffered,
@@ -699,6 +709,9 @@ export const createNewPost = async (prevState, formData) => {
       date,
       startTime,
       endTime,
+      includeButton,
+      buttonOption1,
+      buttonOption2,
       beginnerClinic: {
         beginnerClinicOffered: beginnerClinicOffered,
         beginnerClinicStartTime: beginnerClinicStartTime,
@@ -780,7 +793,8 @@ export async function replyToPost(postId) {
         {
           $push: {
             replies: {
-              name: firstName,
+              firstName,
+              lastName,
               email,
               userId: _id.toString(),
               pic:

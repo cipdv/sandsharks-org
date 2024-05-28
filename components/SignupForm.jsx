@@ -58,7 +58,7 @@ const SignupForm = () => {
           type="text"
           id="lastName"
           name="lastName"
-          placeholder="Last name"
+          placeholder="Full last name"
           required
         />
         <label htmlFor="pronouns">Pronouns</label>

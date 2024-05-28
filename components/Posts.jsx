@@ -39,7 +39,24 @@ const Posts = async ({ posts, user }) => {
                       <br />
                     </p>
                   ))}
+                  {post.includeButton && (
+                    <form
+                      action={async () => {
+                        "use server";
+                        await replyToPost(post._id);
+                      }}
+                    >
+                      <button type="submit" className="btn mt-4">
+                        {post.replies.some(
+                          (reply) => reply.email === user?.email
+                        )
+                          ? post.buttonOption2 || "Option 2"
+                          : post.buttonOption1 || "Option 1"}
+                      </button>
+                    </form>
+                  )}
                 </div>
+
                 {post.startTime && (
                   <div>
                     <div className="mt-4">
@@ -87,7 +104,7 @@ const Posts = async ({ posts, user }) => {
                               </div>
                             </div>
                             <div className="text-center mt-1 text-xs">
-                              {reply?.name}
+                              {reply?.firstName || reply?.name}
                             </div>
                           </div>
                         ))}
@@ -96,7 +113,10 @@ const Posts = async ({ posts, user }) => {
                   </div>
                 )}
               </li>
-              {new Date(post.date) > new Date() && (
+              {new Date() <
+                new Date(
+                  new Date(post.date).setDate(new Date(post.date).getDate() + 1)
+                ) && (
                 <form
                   action={async () => {
                     "use server";
@@ -105,8 +125,8 @@ const Posts = async ({ posts, user }) => {
                 >
                   <button type="submit" className="btn ml-4">
                     {post.replies.some((reply) => reply.email === user?.email)
-                      ? "I can no longer go :("
-                      : "I'll be there :D"}
+                      ? post.buttonOption2 || "I can no longer go :("
+                      : post.buttonOption1 || "I'll be there! :)"}
                   </button>
                 </form>
               )}

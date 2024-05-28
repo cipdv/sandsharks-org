@@ -100,7 +100,11 @@ const USPostsEditable = ({ posts, user }) => {
                     <h1>Who's going:</h1>
                     <p>Number of replies: {post.replies.length}</p>
                     {post.replies.map((reply) => (
-                      <p key={reply._id}>{reply?.name}</p>
+                      <p key={reply._id}>
+                        {reply.firstName && reply.lastName
+                          ? `${reply.firstName} ${reply.lastName}`
+                          : reply.name}
+                      </p>
                     ))}
                   </div>
                   <div className="bg-blue-300 rounded-lg p-4 mt-4">

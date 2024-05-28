@@ -47,6 +47,18 @@ const PostForm = () => {
             <input type="time" name="endTime" className="w-full" />
           </div>
         </div>
+        <div className="mt-4">
+          <input type="checkbox" name="includeButton" />
+          <label className="ml-2">Include Button</label>
+        </div>
+        <div className="mt-4">
+          <label>Button option for yes:</label>
+          <input type="text" name="buttonOption1" />
+        </div>
+        <div className="mt-4">
+          <label>Button option for no:</label>
+          <input type="text" name="buttonOption2" />
+        </div>
         <div className="bg-blue-300 rounded-lg p-4 mt-4">
           <div>
             <input type="checkbox" name="beginnerClinicOffered" />

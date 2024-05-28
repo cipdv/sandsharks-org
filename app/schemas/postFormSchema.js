@@ -24,4 +24,7 @@ export const PostFormSchema = z.object({
     })
     .optional(),
   courts: z.string().optional().or(z.literal("")),
+  buttonOption1: z.string().optional().or(z.literal("")),
+  buttonOption2: z.string().optional().or(z.literal("")),
+  includeButton: z.boolean().default(false),
 });
