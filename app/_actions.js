@@ -134,6 +134,7 @@ export async function registerNewMember(prevState, formData) {
       <p>
         Now that you’re signed up, you can login at sandsharks.ca to check the
         weekly updates to see when we’ll be playing. Once you login, you'll need to accept the waiver and agree to the code of conduct to continue.
+
       </p>
       
         <h3>
@@ -148,8 +149,7 @@ export async function registerNewMember(prevState, formData) {
         ball, then you can join in with the rest of the group.
       </p>
       <p>
-        Check the website on Wednesdays to see the updates for when we’ll be
-        playing that week. If I’m running a clinic that weekend, it will be
+        Updates for the upcoming weekend are posted on Wednesdays, so check the updates and if I’m running a clinic that weekend, it will be
         posted with the start and end times. If you plan on coming, please click
         the “Yas, plz help me!” button. There is limited space for new players
         in the clinic, so if you can no longer make it, please click the “I
@@ -163,8 +163,7 @@ export async function registerNewMember(prevState, formData) {
           </h3>
           
         <p>
-        Check the website on Wednesdays to see the updates for when we’ll be
-        playing that week. If you plan on coming, please click the “I’ll be
+        Updates for the upcoming weekend are posted on Wednesdays. So login for the weekly update, and if you plan on coming, please click the “I’ll be
         there!” button, it helps me know how much equipment to bring to the
         beach, and please click the “I can no longer make it” button if you
         change your mind.
