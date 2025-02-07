@@ -6,6 +6,7 @@ import { useFormState, useFormStatus } from "react-dom";
 const initialState = {
   message: "",
   title: "",
+  image: null,
 };
 
 function SubmitButton() {
@@ -32,6 +33,14 @@ const PostForm = () => {
         <h1>{state?.title}</h1>
         <label>Message</label>
         <textarea className="min-h-[200px] w-full" name="message" />
+        <h1>{state?.message}</h1>
+        <input
+          type="file"
+          id="photoUpload"
+          name="photoUpload"
+          accept="image/*"
+          className="block mt-4"
+        />
 
         <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-2 w-full">
           <div className="sm:w-4/12">

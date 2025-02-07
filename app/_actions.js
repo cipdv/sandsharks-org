@@ -339,9 +339,9 @@ export async function updateMemberProfile(prevState, formData) {
 
   if (profilePic?.size > 0) {
     const buffer = await profilePic.arrayBuffer();
-    if (buffer.byteLength > 2000000) {
-      // limit file size to 2MB
-      return { message: "Profile picture must be less than 2MB" };
+    if (buffer.byteLength > 5000000) {
+      // limit file size to 5MB
+      return { message: "Profile picture must be less than 5MB" };
     }
 
     // Convert ArrayBuffer to data URL
@@ -1020,5 +1020,36 @@ export async function getWaivers() {
     return waivers;
   } catch (error) {
     console.error(error);
+  }
+}
+
+export async function submitSurvey(formData) {
+  try {
+    const dbClient = await dbConnection;
+    const db = await dbClient.db("Sandsharks");
+
+    // Ensure the "surveys" collection exists
+    const collections = await db.listCollections({ name: "surveys" }).toArray();
+    if (collections.length === 0) {
+      await db.createCollection("surveys");
+    }
+
+    // Insert the survey data into the "surveys" collection
+    await db.collection("surveys").insertOne({
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      email: formData.email,
+      permits: formData.permits,
+      volunteer: formData.volunteer,
+      comments: formData.comments,
+      feeDeterrent: formData.feeDeterrent,
+      createdAt: new Date(),
+    });
+
+    revalidatePath("/dashboard/member");
+    return { message: "Survey submitted" };
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to submit survey");
   }
 }
